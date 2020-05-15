@@ -9,7 +9,7 @@ The two main features of this application are:
 
 ## Problem statement
 
-In the tutor company IBOS, the results/grades of the students are tracked in the old fashioned way: with paper. Because of this, it is generally hard to see whether there is any signigicant change in the actual performance of the student. Also, with paper comes the problems of physical storage which we immediately omit by implementing this system.
+In the tutor company IBOS, the results/grades of the students are tracked in the old fashioned way: with paper. Because of this, it is generally hard to see whether there is any significant change in the actual performance of the student. Also, with paper comes the problems of physical storage which we immediately omit by implementing this system.
 Also, the company never had a coherent way to keep track of the student absences.
 
 Since there is a common held belief that students that always arrive on time (and are thus considered organized and responsible), have better grades, we also wish to investigate the correlation of student absences with their performance. 
