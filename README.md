@@ -18,7 +18,7 @@ Since there is a common held belief that students that always arrive on time (an
 
 In this application, there are four kind of accounts: student, tutor, parents and administrators. Students can give permission for other parent accounts to view their results and the corresponding analysis (graphs). Students can not view other student their results and parents can only view results they are being permitted to see. Tutors can access all grades/absences etc., but can not (for example) view the flask-admin page. Administrators can access every route, can change roles of already existing accounts and are the only ones who can make tutor accounts.
 
-The first main feauture of this application is a way to add the grades / delete grades / change grades, after which we want to be able to analyze that they have gotten from their school. 
+The first main feature of this application is a way to add the grades / delete grades / change grades, after which we want to be able to analyze that they have gotten from their school. 
 Such a "grade" has context surrounding it, such as:
 - The weight of the grade;
 - The corresponding class of the grade;
@@ -38,7 +38,7 @@ The second main feature is in contrast very simple (namely keeping track of the 
 
 
 ### Extra Features
-If time permits, the following feautures will be implemented: 
+If time permits, the following features will be implemented: 
 - Blog Posts such that tutors and administrators can leave messages on the application for the students / parents (e.g. vacation days etc.).
 - Implementation of more grading systems
 - Implementation of the difference between a regular test and school / central exam test.
@@ -73,6 +73,6 @@ If you are logged in (or have just signed up), you have access to a portal. The 
 ![Sketch of Portal](doc/img/sketch-portal-1.png)
 ![Sketch of Portal](doc/img/sketch-portal-2.png)
 
-All the other feautures are self-evident from the above sketches (like adding grades via modals etc.). 
+All the other features are self-evident from the above sketches (like adding grades via modals etc.). 
 
 
