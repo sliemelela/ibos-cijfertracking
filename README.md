@@ -68,11 +68,11 @@ When a user first visits the web application, the user will be met with a home p
 ![Sketch of Homepage](doc/img/sketch-home-page-1.png)
 ![Sketch of Homepage](doc/img/sketch-home-page-2.png)
 
-If you are logged in (or have just signed up), you have access to a portal. The administrators and tutors can see the list of students, while a student can only their own page. Parents can also see a list of students, but that list is limited to their own children.
+If you are logged in (or have just signed up), you have access to a portal. The administrators and tutors can see the list of students, while a student can view only their own page. Parents can also see a list of students, but that list is limited to their own children.
 
 ![Sketch of Portal](doc/img/sketch-portal-1.png)
 ![Sketch of Portal](doc/img/sketch-portal-2.png)
 
-TODO: Describe different ways that your application will be used, with all relevant screens sketched out
+All the other feautures are self-evident from the above sketches (like adding grades via modals etc.). 
 
 
