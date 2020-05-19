@@ -34,6 +34,10 @@ app.secret_key = os.environ['SECRET_KEY']
 
 # Configure admin interface
 admin = Admin(app, name='IBOS', template_mode='bootstrap3')
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(School, db.session))
+admin.add_view(ModelView(SchoolLevel, db.session))
+admin.add_view(ModelView(SchoolYear, db.session))
 
 # Configuring flask Login
 login_manager = LoginManager()
@@ -43,7 +47,6 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 # Password validation for signing up.
 def pass_validation(password):
@@ -63,4 +66,152 @@ def pass_validation(password):
 # Home page
 @app.route("/")
 def index():
-    return "Test"
+    return render_template("index.html")
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+@app.route("/testimonials")
+def testimonials():
+    return render_template("testimonials.html")
+
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
+
+
+# User registration
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+
+    # Retrieving list of schools, levels and years
+    schools = School.query.all()
+    schoolLevels = SchoolLevel.query.all()
+    schoolYears = SchoolYear.query.all()
+
+    if request.method == "POST":
+
+        # Retrieving user input
+        username = request.form.get("username")
+        password = request.form.get("password")
+        firstName = request.form.get("first_name")
+        lastName = request.form.get("last_name")
+        email = request.form.get("email")
+        role = request.form.get("role")
+        school = request.form.get("school")
+        schoolLevel = request.form.get("schoolLevel")
+        schoolYear = request.form.get("schoolYear")
+
+        # Booleans for role of user
+        student = False
+        parent = False 
+        if role == "student":
+            student = True
+        elif role == "parent":
+            parent = True 
+            school = None
+            schoolLevel = None
+            schoolYear = None
+
+        # Hashing password
+        salt = os.urandom(32)
+        key = hashlib.pbkdf2_hmac('sha256', password.encode("utf-8"), salt, 100000)
+
+        # Inserting information into database
+        user = User(username = username, firstName = firstName, lastName = lastName, email = email, key = key, salt = salt, \
+            student = student, parent = parent, tutor = False, admin = False, schoolID = school, levelID = schoolLevel, yearID = schoolYear)
+        db.session.add(user)
+        db.session.commit()
+
+        # Logging in user
+        login_user(user)
+
+        return "Yello"
+
+    return render_template("signup.html", schools = schools, schoolLevels = schoolLevels, schoolYears = schoolYears)
+
+# Routes that are used for signup validation
+@app.route("/usernamecheck", methods=["POST"])
+def usernamecheck():
+
+    # Retrieving username
+    username = request.form.get("username")
+
+    # Checking if username is aready taken
+    user = User.query.filter_by(username=username).first()
+    if user is not None:
+        return jsonify({"username_success": False, "message": "That username is already taken."})
+
+    # Checking if username has more than 3 characters
+    elif len(username) < 4:
+        return jsonify({"username_success": False, "message": "A username has to have more than three characters."})
+
+    return jsonify({"username_sucess": True})
+
+@app.route("/passwordcheck", methods=["POST"])
+def passwordcheck():
+
+    # Retrieving password
+    password = request.form.get("password")
+    password_repeat = request.form.get("password_repeat")
+
+    # Checking if password satisfies the requirements
+    if pass_validation(password)[0] == False:
+        return jsonify({"password_success": False, "message": pass_validation(password)[1]})
+    else:
+        return jsonify({"password_success": True, "message": pass_validation(password)[1]})
+
+@app.route("/passwordcrossvalidation", methods=["POST"])
+def passwordcrossvalidation():
+
+    # Retrieving password information
+    password = request.form.get("password")
+    password_repeat = request.form.get("password_repeat")
+
+    if password != password_repeat:
+        return jsonify({"password_success": False, "message": "The passwords do not match!"})
+    else:
+        return jsonify({"password_success": True, "message": "Looks good!"})
+
+@app.route("/emailcheck", methods=["POST"])
+def emailcheck():
+
+    email = request.form.get("email")
+    user = User.query.filter_by(email=email).first()
+    if user is not None:
+        email_available = False
+        return jsonify({"email_available": False, "message": "This e-mail is already in use."})
+    else:
+        return jsonify({"email_available": True})
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "POST":
+
+        # Retrieving user input
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        # Retrieving user information
+        user = User.query.filter_by(username=username).first()
+
+        # Checking if user input is valid
+        if user is None:
+            flash("Username or password is incorrect!", "warning")
+            return redirect(url_for("login"))
+
+        # Retrieving salt and generating corresponding key
+        salt = user.salt
+        key = hashlib.pbkdf2_hmac('sha256', password.encode("utf-8"), salt, 100000)
+        if user.key != key:
+            flash("Username or password is incorrect!", "warning")
+
+        # Logging in user
+        else:
+            login_user(user)
+            return redirect(url_for("menu"))
+
+
+    return render_template("login.html")

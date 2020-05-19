@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Welcome
+{% endblock %}
+
+{% block body %}
+  <form action="" method="post" id="signup">
+    <div class="form-group row">
+      <label for="username" class="col-sm-2 col-form-label">Username</label>
+      <div class="col-sm-10">
+        <input type="text" name="username" class="form-control" id="username" placeholder="Username" required>
+        <div id="username_message"></div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="password" class="col-sm-2 col-form-label">Password</label>
+      <div class="col-sm-10">
+        <input type="password" id="password" name="password" class="form-control"  placeholder="Password" required>
+        <div id="password_message"></div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="password_repeat" class="col-sm-2 col-form-label">Password Repeat</label>
+      <div class="col-sm-10">
+        <input type="password" name="password_repeat" class="form-control" id="password_repeat" placeholder="Repeat Password">
+        <div id="password_repeat_message"></div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="first_name" class="col-sm-2 col-form-label">First Name</label>
+      <div class="col-sm-10">
+        <input type="text" name="first_name" class="form-control" id="first_name" placeholder="First Name">
+        <div id="first_name_message"></div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="last_name" class="col-sm-2 col-form-label">Last Name</label>
+      <div class="col-sm-10">
+        <input type="text" name="last_name" class="form-control" id="last_name" placeholder="Last Name">
+        <div id="last_name_message"></div>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="email" class="col-sm-2 col-form-label">Email</label>
+      <div class="col-sm-10">
+        <input type="text" name="email" class="form-control" id="email" placeholder="name@website.com">
+        <div id="email_message"></div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="role" class="col-sm-2 col-form-label">Role</label>
+      <div class="col-sm-10">
+        <label class="radio-inline">
+          <input value="student" type="radio" name="role" id="student" checked> Student
+        </label>
+        <label class="radio-inline">
+          <input value="parent" type="radio" name="role" id="parent"> Parent
+        </label>
+      </div> 
+    </div>
+
+    <div id="studentRole">
+    <div class="form-group row">
+      <label for="school" class="col-sm-2 col-form-label">School</label>
+      <div class="col-sm-10">
+        <select class="form-control" id="school" name="school">
+            <option value="">Select a School</option>
+          {% for school in schools | sort(attribute='name') %}
+            <option value="{{ school.id }}">{{ school.name }}</option>
+          {% endfor %}
+          <option value="other">Other</option>
+        </select>
+        <div id="school_message"></div>
+      </div>
+    </div>
+
+    <div class="form-group row ">
+      <label for="schoolLevel" class="col-sm-2 col-form-label">School Level</label>
+      <div class="col-sm-10">
+        <select class="form-control" id="schoolLevel" name="schoolLevel">
+            <option value="">Select a School Level</option>
+          {% for schoolLevel in schoolLevels | sort(attribute='name') %}
+            <option value="{{ schoolLevel.id }}">{{ schoolLevel.name }}</option>
+          {% endfor %}
+        </select>
+        <div id="level_message"></div>
+      </div>
+    </div>
+
+    <div class="form-group row">
+      <label for="schoolYear" class="col-sm-2 col-form-label">School Year</label>
+      <div class="col-sm-10">
+        <select class="form-control" id="schoolYear" name="schoolYear">
+            <option value="">Select a School Year</option>
+          {% for schoolYear in schoolYears | sort(attribute='year') %}
+            <option value="{{ schoolYear.id }}">{{ schoolYear.year }}</option>
+          {% endfor %}
+        </select>
+        <div id="year_message"></div>
+      </div>
+    </div>
+    </div>
+    <button class="btn btn-outline-primary btn-lg" id="submit" type="submit">Submit</button>
+
+
+  </form>
+{% endblock %}
