@@ -10,6 +10,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from models import *
+from datetime import date
 
 # Configure Flask app
 app = Flask(__name__)
@@ -37,7 +38,13 @@ admin = Admin(app, name='IBOS', template_mode='bootstrap3')
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(School, db.session))
 admin.add_view(ModelView(SchoolLevel, db.session))
-admin.add_view(ModelView(SchoolYear, db.session))
+admin.add_view(ModelView(Family, db.session))
+admin.add_view(ModelView(GroupTime, db.session))
+admin.add_view(ModelView(StudentGroup, db.session))
+admin.add_view(ModelView(StudentAbsent, db.session))
+admin.add_view(ModelView(Course, db.session))
+admin.add_view(ModelView(TestType, db.session))
+admin.add_view(ModelView(Grade, db.session))
 
 # Configuring flask Login
 login_manager = LoginManager()
@@ -45,8 +52,8 @@ login_manager.init_app(app)
 
 # Method for loading user
 @login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+def load_user(userID):
+    return User.query.get(int(userID))
 
 # Password validation for signing up.
 def pass_validation(password):
@@ -211,7 +218,98 @@ def login():
         # Logging in user
         else:
             login_user(user)
-            return redirect(url_for("menu"))
+            if user.admin:
+                return redirect(url_for("portal"))
+            elif user.parent or user.tutor:
+                return redirect(url_for("all"))
+            else:
+                return redirect(url_for("student"))
 
 
     return render_template("login.html")
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for("index"))
+
+@app.route("/portal")
+@login_required
+def portal():
+    return render_template("portal.html")
+
+@app.route("/portal/tutor")
+@login_required
+def tutor():
+    students = User.query.filter_by(student=True).all()
+    groups = GroupTime.query.all()
+    return render_template("portal-tutor.html", students = students, groups = groups)
+
+@app.route("/portal/student/<int:userID>")
+@login_required
+def student(userID):
+
+    # Retrieve information about student 
+    student = User.query.filter_by(id=userID).first()
+
+    return render_template("portal-student.html", student=student)
+
+@app.route("/portal/student/<int:userID>/addcourse", methods=["POST"])
+@login_required
+def addCourse(userID):
+
+    # Retrieve user input 
+    courseName = request.form.get("course")
+
+    # Initiating a new course and adding it to the database 
+    course = Course(studentID=int(userID), name=courseName)
+    db.session.add(course)
+    db.session.commit()
+
+    return redirect(url_for("student", userID=userID))
+
+@app.route("/portal/student/<int:userID>/course/<int:courseID>")
+@login_required
+def course(userID, courseID):
+
+    # Retrieve information about student and course
+    student = User.query.filter_by(id=userID).first()
+    course = Course.query.filter_by(id=courseID).first()
+
+    # Retrieve all test types
+    testTypes = TestType.query.all()
+
+    # Retrieve information about course 
+    return render_template("course.html", student=student, course=course, testTypes=testTypes)
+
+@app.route("/portal/student/<int:userID>/addgrade", methods=["POST"])
+def addGrade(userID):
+    
+    # Retrieving date
+    today = date.today()
+    today.strftime('%Y-%m-%d')
+
+    # Retrieving user information
+    courseName = request.form.get("course")
+    grade = request.form.get("grade")
+    weight = request.form.get("weight")
+    testTypeID = request.form.get("testType")
+    dateTest = request.form.get("dateTest")
+
+    # Retrieving course id
+    course = Course.query.filter_by(studentID=userID, name=courseName).first()
+    courseID = course.id
+
+    # Initiating new grade object 
+    if dateTest == '':
+        grade = Grade(courseID=courseID, grade=grade, weight=weight, typeID=testTypeID, dateAdded=today, dateUpdate=today)
+    else: 
+        grade = Grade(courseID=courseID, grade=grade, weight=weight, typeID=testTypeID, dateAdded=today, dateUpdate=today, dateTest=dateTest)
+    
+    # Adding grade to database
+    db.session.add(grade)
+    db.session.commit()
+
+    return redirect(url_for("student", userID=userID, courseID=courseID))
+

@@ -19,7 +19,7 @@ class SchoolYear(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     year = db.Column(db.Integer, nullable=False)
 
-# Class of users
+# Classes that describe user relations
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -36,3 +36,74 @@ class User(UserMixin, db.Model):
     schoolID = db.Column(db.Integer, db.ForeignKey("schools.id"))
     levelID = db.Column(db.Integer, db.ForeignKey("schoolLevels.id"))
     yearID = db.Column(db.Integer, db.ForeignKey("schoolYears.id"))
+    courses = db.relationship('Course', lazy=True)
+
+    def __repr__(self):
+        return '<User %r>' % self.username
+
+class Family(db.Model):
+    __tablename__ = 'families'
+    id = db.Column(db.Integer, primary_key=True)
+    parentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+
+class GroupTime(db.Model):
+    __tablename__ = 'groupTimes'
+    id = db.Column(db.Integer, primary_key=True)
+    day = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    studentGroups = db.relationship('StudentGroup', backref="group", lazy=True)
+
+    def __repr__(self):
+        return f'<Group {self.name} at day {self.day}>'
+
+class StudentGroup(db.Model):
+    __tablename__ = 'studentGroups'
+    id = db.Column(db.Integer, primary_key=True)
+    groupID = db.Column(db.Integer, db.ForeignKey("groupTimes.id"), nullable=False)
+    studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    students = db.relationship('User', lazy=True)
+
+# Class that keeps track of student absences 
+class StudentAbsent(db.Model):
+    __tablename__ = 'studentAbsences'
+    id = db.Column(db.Integer, primary_key=True)
+    studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    absent = db.Column(db.Boolean, nullable=False)
+    permitted = db.Column(db.Boolean, nullable=False)
+    late = db.Column(db.Boolean, nullable=False)
+
+# Classes that keep track of performance of students 
+class Course(db.Model):
+    __tablename__ = 'courses'
+    id = db.Column(db.Integer, primary_key=True)
+    studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    name = db.Column(db.String, nullable=False, unique=True)
+    grades = db.relationship('Grade', lazy=True)
+
+    def __repr__(self):
+        return '<Course %r>' % self.name
+
+class TestType(db.Model):
+    __tablename__ = 'testTypes'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False, unique=True)
+
+class Grade(db.Model):
+    __tablename__ = 'grades'
+    id = db.Column(db.Integer, primary_key=True)
+    courseID = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
+    grade = db.Column(db.Float, nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    typeID = db.Column(db.Integer, db.ForeignKey("testTypes.id"), nullable=False)
+    testType = db.relationship('TestType', lazy=True)
+    dateAdded = db.Column(db.Date, nullable=False)
+    dateUpdate = db.Column(db.Date, nullable=False)
+    dateTest = db.Column(db.Date)
+
+
+
+
+
+

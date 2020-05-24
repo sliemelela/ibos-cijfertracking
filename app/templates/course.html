@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Welcome
+{% endblock %}
+
+{% block body %}
+  <h1>Course: {{ course.name }}</h1>
+
+    <!-- Button for adding course -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addGradeModel">
+        Add Grade
+    </button>
+  
+    <!-- Modal for adding course -->
+    <div class="modal fade" id="addGradeModel" tabindex="-1" role="dialog" aria-labelledby="addGradeModelLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="addGradeModelLabel">Add a Course</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form action="{{ url_for('addGrade', userID = student.id) }}" method="post">
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="addCourse">Course Name</label>
+                <input type="text" name="course" value="{{ course.name }}" class="form-control" id="addCourse" readonly>
+            </div>
+            <div class="form-group">
+                <label for="addGrade">Grade</label>
+                <input type="number" min="0" max="10" step="0.01" name="grade" class="form-control" id="addGrade" placeholder="Grade" required>
+            </div>
+            <div class="form-group">
+                <label for="addWeight">Weight</label>
+                <input type="number" min="0" max="100" step="0.01" name="weight" class="form-control" id="addWeight" placeholder="Weight" required>
+            </div>   
+            <div class="form-group">
+                <label for="addTestType">Type Test</label>
+                <select class="form-control" id="addTestType" name="testType">
+                {% for testType in testTypes | sort(attribute='name') %}
+                    <option value="{{ testType.id }}">{{ testType.name }}</option>
+                 {% endfor %}
+            </select>
+            </div>
+            <div class="form-group">
+                <label for="addDateTest">Date Test</label>
+                <input type="date" name="dateTest" class="form-control" id="addDateTest" placeholder="Date">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add a grade</button>
+        </div>
+        </form>
+        </div>
+    </div>
+    </div>
+
+    <!-- List of courses -->
+    <ul>
+    {% for grade in course.grades %}
+        <li>
+            {{ grade.grade }} afgenomen op. {{ grade.dateTest }}. Toegevoegd op {{ grade.dateAdded }}. Last Updated {{ grade.dateUpdate }}. Het is een {{ grade.testType.name }}
+        </li>
+    {% endfor %}
+    </ul>
+{% endblock %}

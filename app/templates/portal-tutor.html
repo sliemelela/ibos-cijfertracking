@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Welcome
+{% endblock %}
+
+{% block body %}
+  {% for group in groups %}
+    <h2>{{ group.name }}</h2>
+    <ul>
+        {% for studentGroup in group.studentGroups %}
+            <li><a href="{{ url_for('student', userID = studentGroup.students.id) }}">{{ studentGroup.students.firstName }} {{ studentGroup.students.lastName}}</a></li>
+        {% endfor %}
+    </ul>
+  {% endfor %}
+{% endblock %}
