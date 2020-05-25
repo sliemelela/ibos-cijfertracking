@@ -81,9 +81,17 @@ class Course(db.Model):
     studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String, nullable=False, unique=True)
     grades = db.relationship('Grade', lazy=True)
+    means = db.relationship('Mean', lazy=True)
 
     def __repr__(self):
         return '<Course %r>' % self.name
+
+class Mean(db.Model):
+    __tablename__  = 'means'
+    id = db.Column(db.Integer, primary_key=True)
+    courseID = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
+    mean = db.Column(db.Float, nullable=False)
+    date = db.Column(db.Date, nullable=False) 
 
 class TestType(db.Model):
     __tablename__ = 'testTypes'

@@ -1,6 +1,7 @@
 import hashlib
 import os
 import re
+import numpy as np
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_session import Session
@@ -11,6 +12,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from models import *
 from datetime import date
+
 
 # Configure Flask app
 app = Flask(__name__)
@@ -276,19 +278,19 @@ def course(userID, courseID):
     # Retrieve information about student and course
     student = User.query.filter_by(id=userID).first()
     course = Course.query.filter_by(id=courseID).first()
+    means = Mean.query.filter_by(courseID=courseID).all()
 
     # Retrieve all test types
     testTypes = TestType.query.all()
 
     # Retrieve information about course 
-    return render_template("course.html", student=student, course=course, testTypes=testTypes)
+    return render_template("course.html", student=student, course=course, testTypes=testTypes, means=means)
 
 @app.route("/portal/student/<int:userID>/addgrade", methods=["POST"])
 def addGrade(userID):
     
     # Retrieving date
     today = date.today()
-    today.strftime('%Y-%m-%d')
 
     # Retrieving user information
     courseName = request.form.get("course")
@@ -311,5 +313,18 @@ def addGrade(userID):
     db.session.add(grade)
     db.session.commit()
 
-    return redirect(url_for("student", userID=userID, courseID=courseID))
+    # Retrieving all grades from course
+    gradeObjects = Grade.query.filter_by(courseID=courseID).all()
+    grades = [int(gradeObject.grade) for gradeObject in gradeObjects]
+    weights = [int(gradeObject.grade) for gradeObject in gradeObjects]
+
+    # Calculating the (weighted) mean of all grades 
+    mean = np.average(grades, weights=weights)
+
+    # Iniating mean object and adding it to database
+    meanObject = Mean(courseID=courseID, mean=mean, date=today)
+    db.session.add(meanObject)
+    db.session.commit()
+
+    return redirect(url_for("course", userID=userID, courseID=courseID))
 

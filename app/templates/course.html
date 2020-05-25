@@ -57,7 +57,7 @@
         </div>
     </div>
     </div>
-
+    <h3>Mean List: {% if course.means|length > 0 %}{{ course.means[-1].mean }} {% endif %}</h3>
     <!-- List of courses -->
     <ul>
     {% for grade in course.grades %}
@@ -66,4 +66,52 @@
         </li>
     {% endfor %}
     </ul>
+
+    <!-- Graphs -->
+    <canvas id="myChart"></canvas>
+    <script>
+        const ctx = document.getElementById('myChart');
+        const data = {
+            // Labels should be Date objects
+            labels: [{% for mean in means %} new Date("{{ mean.date }}".replace(/-/g, ",")), {% endfor %}],
+            datasets: [{
+                fill: false,
+                label: 'The mean',
+                data: [{% for mean in means %} {{ mean.mean }},  {% endfor %}],
+                borderColor: '#fe8b36',
+                backgroundColor: '#fe8b36',
+                lineTension: 0,
+            }]
+        }
+        const options = {
+            type: 'line',
+            data: data,
+            options: {
+                fill: false,
+                responsive: true,
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Date",
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                        },
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Page Views",
+                        }
+                    }]
+                }
+            }
+        }
+        const chart = new Chart(ctx, options);
+    </script>
+    
 {% endblock %}
