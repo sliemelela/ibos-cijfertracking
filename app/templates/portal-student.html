@@ -26,7 +26,7 @@
         <div class="modal-body">
             <div class="form-group">
                 <label for="addCourse">Course Name</label>
-                <input type="email" name="course" class="form-control" id="addCourse" placeholder="Course name">
+                <input type="text" name="course" class="form-control" id="addCourse" placeholder="Course name">
             </div>
              
         </div>
@@ -47,4 +47,139 @@
         </li>
     {% endfor %}
     </ul>
+
+     <!-- Button for adding parent -->
+     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addParentModal">
+        Add Parent
+    </button>
+  
+    <!-- Modal for adding parent -->
+    <div class="modal fade" id="addParentModal" tabindex="-1" role="dialog" aria-labelledby="addParentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="addParentModalLabel">Add a Parent</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form action="{{ url_for('addFamily', userID = student.id) }}" method="post">
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="addParent">Username of Parent</label>
+                <input type="text" name="parent" class="form-control" id="addParent" placeholder="Course name">
+                <input type="hidden" name="submitted" value="student">
+            </div>
+             
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        </form>
+        </div>
+    </div>
+    </div>
+
+    <!-- List of parents -->
+    <ul>
+        {% for parent, familyParent in parentsInfo %}
+        {% if (familyParent.pending) and (familyParent.studentSubmit)%}
+        <h3>Pending Parents</h3>
+            <li>
+                {{ parent.firstName }} {{ parent.lastName }}
+            </li>
+        {% elif (familyParent.pending) and (familyParent.parentSubmit)%}
+        <h5>{{ parent.firstName }} {{ parent.lastName }} is requesting relation.</h5>
+        <form action="{{ url_for('pending') }}" method="post">
+          <button type="submit" class="btn btn-success" name="decision" value="accept">Accept</button>
+          <button type="submit" class="btn btn-secondary" name="decision" value="deny">Deny</button>
+          <input type="hidden" name="parentID" value="{{ familyParent.parentID }}">
+          <input type="hidden" name="studentID" value="{{ student.id }}">
+        </form>
+        {% else %}
+            <li>
+                {{ parent.firstName }} {{ parent.lastName }}
+            </li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {{ coursesInfo }}
+    <canvas id="myChart"></canvas>
+    <script>
+    function getColor(value){
+        // value from 0 to 1
+        var hue=((value)*100).toString(10);
+        return ["hsl(",hue,",100%,50%, 0.3)"].join("");
+    }
+    function getBorderColor(value){
+        // value from 0 to 1
+        var hue=((value)*80).toString(10);
+        return ["hsl(",hue,",100%,50%, 0.5)"].join("");
+    }
+
+    var ctx = document.getElementById('myChart');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [{% for course in student.courses %} "{{ course.name }}", {% endfor %}],
+            datasets: [{
+                label: 'The mean per course',
+                data: [{% for course in student.courses %} {% if course.means|length > 0 %} {{ course.means[-1].mean }}, {% else %} 0, {% endif %} {% endfor %}],
+                backgroundColor: [
+                    {% for course in student.courses %}
+                        {% if course.means|length > 0 %} getColor({{ course.means[-1].mean }}/10), {% else %} 0, {% endif %} 
+                    {% endfor %}
+                ],
+                borderColor: [
+                {% for course in student.courses %}
+                        {% if course.means|length > 0 %} getBorderColor({{ course.means[-1].mean }}/7), {% else %} 0, {% endif %} 
+                {% endfor %}
+                ],
+                borderWidth: 1,
+                hoverBackgroundColor: [
+                {% for course in student.courses %}
+                        {% if course.means|length > 0 %} getBorderColor({{ course.means[-1].mean }}/7), {% else %} 0, {% endif %} 
+                {% endfor %}
+                ]
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+    </script>
+    <canvas id="myRadar"></canvas>
+    <script>
+        new Chart(document.getElementById("myRadar"), {
+        type: 'radar',
+        data: {
+        labels: [{% for overallMean in overallMeans %} "{{ overallMean.testType.name }}", {% endfor %}],
+        datasets: [
+            {
+            label: "Mean grade",
+            fill: true,
+            backgroundColor: "rgba(255,99,132,0.2)",
+            borderColor: "rgba(255,99,132,1)",
+            pointBorderColor: "#fff",
+            pointBackgroundColor: "rgba(255,99,132,1)",
+            pointBorderColor: "#fff",
+            data: [{% for overallMean in overallMeans %} {{ overallMean.mean }}, {% endfor %}]
+            }
+        ]
+        },
+        options: {
+        title: {
+            display: false,
+            text: 'The mean grade per test type'
+        }
+        }
+    });
+    </script>
 {% endblock %}

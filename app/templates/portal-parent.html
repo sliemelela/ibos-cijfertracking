@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Welcome
+{% endblock %}
+
+{% block body %}
+<h1>Welcome {{ parent.firstName }} {{  parent.lastName  }}</h1>
+
+      <!-- Button for adding child -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addChildModal">
+        Add Child
+    </button>
+  
+    <!-- Modal for adding child  -->
+    <div class="modal fade" id="addChildModal" tabindex="-1" role="dialog" aria-labelledby="addChildModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="addChildModalLabel">Add a Child</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form action="{{ url_for('addFamily', userID = parent.id) }}" method="post">
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="addChild">Username of Child</label>
+                <input type="text" name="student" class="form-control" id="addChild" placeholder="Course name">
+                <input type="hidden" name="submitted" value="parent">
+            </div>
+             
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+        </form>
+        </div>
+    </div>
+    </div>
+
+  <h3>My children</h3>
+  {% if childrenInfo %}
+    {% for child, familyChild in childrenInfo %}
+      {% if (familyChild.pending) and (familyChild.studentSubmit)%}
+        <h5>{{ child.firstName }} {{ child.lastName }} is requesting relation.</h5>
+        <form action="{{ url_for('pending') }}" method="post">
+          <button type="submit" class="btn btn-success" name="decision" value="accept">Accept</button>
+          <button type="submit" class="btn btn-secondary" name="decision" value="deny">Deny</button>
+          <input type="hidden" name="studentID" value="{{ familyChild.studentID }}">
+          <input type="hidden" name="parentID" value="{{ parent.id }}">
+        </form>
+      {% elif (familyChild.pending) and (familyChild.parentSubmit) %}
+      <p>Pending {{ child.firstName}} {{ child.lastName }}</p>
+      {% else %}
+      <a href="{{ url_for('student', userID=child.id) }}"><p>{{ child.firstName}} {{ child.lastName }}</p></a>
+      {% endif %}
+    {% endfor %}
+    {% else %}
+      <p>No children</p>
+  {% endif %}
+{% endblock %}

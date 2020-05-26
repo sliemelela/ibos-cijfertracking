@@ -34,6 +34,7 @@ class User(UserMixin, db.Model):
     tutor = db.Column(db.Boolean, nullable=False)
     admin = db.Column(db.Boolean, nullable=False)
     schoolID = db.Column(db.Integer, db.ForeignKey("schools.id"))
+    school = db.relationship('School', lazy=True)
     levelID = db.Column(db.Integer, db.ForeignKey("schoolLevels.id"))
     yearID = db.Column(db.Integer, db.ForeignKey("schoolYears.id"))
     courses = db.relationship('Course', lazy=True)
@@ -46,6 +47,9 @@ class Family(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     parentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    pending = db.Column(db.Boolean)
+    studentSubmit = db.Column(db.Boolean)
+    parentSubmit = db.Column(db.Boolean)
 
 class GroupTime(db.Model):
     __tablename__ = 'groupTimes'
@@ -79,7 +83,7 @@ class Course(db.Model):
     __tablename__ = 'courses'
     id = db.Column(db.Integer, primary_key=True)
     studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    name = db.Column(db.String, nullable=False, unique=True)
+    name = db.Column(db.String, nullable=False)
     grades = db.relationship('Grade', lazy=True)
     means = db.relationship('Mean', lazy=True)
 
@@ -91,7 +95,16 @@ class Mean(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     courseID = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
     mean = db.Column(db.Float, nullable=False)
-    date = db.Column(db.Date, nullable=False) 
+    date = db.Column(db.DateTime(timezone=True), nullable=False) 
+
+class OverallMean(db.Model):
+    __tablename__  = 'overalMeans'
+    id = db.Column(db.Integer, primary_key=True)
+    studentID = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    typeID = db.Column(db.Integer, db.ForeignKey('testTypes.id'), nullable=False)
+    testType = db.relationship('TestType', lazy=True)
+    mean = db.Column(db.Float, nullable=False)
+    date = db.Column(db.DateTime(timezone=True), nullable=False) 
 
 class TestType(db.Model):
     __tablename__ = 'testTypes'
@@ -106,8 +119,8 @@ class Grade(db.Model):
     weight = db.Column(db.Float, nullable=False)
     typeID = db.Column(db.Integer, db.ForeignKey("testTypes.id"), nullable=False)
     testType = db.relationship('TestType', lazy=True)
-    dateAdded = db.Column(db.Date, nullable=False)
-    dateUpdate = db.Column(db.Date, nullable=False)
+    dateAdded = db.Column(db.DateTime(timezone=True), nullable=False)
+    dateUpdate = db.Column(db.DateTime(timezone=True), nullable=False)
     dateTest = db.Column(db.Date)
 
 

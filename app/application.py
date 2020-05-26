@@ -3,7 +3,7 @@ import os
 import re
 import numpy as np
 
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, session
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -11,7 +11,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from models import *
-from datetime import date
+from datetime import date, datetime
 
 
 # Configure Flask app
@@ -239,23 +239,125 @@ def logout():
 @app.route("/portal")
 @login_required
 def portal():
-    return render_template("portal.html")
+
+    # Retrieve all users
+    users = User.query.all()
+
+    return render_template("portal.html", users=users)
 
 @app.route("/portal/tutor")
 @login_required
 def tutor():
     students = User.query.filter_by(student=True).all()
     groups = GroupTime.query.all()
-    return render_template("portal-tutor.html", students = students, groups = groups)
+    return render_template("portal-tutor.html", students=students, groups=groups)
+
+@app.route("/portal/parent/<int:userID>")
+def parent(userID):
+
+    # Retrieve information about parent
+    parent = User.query.filter_by(id=userID).first()
+    familyChildren = Family.query.filter_by(parentID=userID).all() 
+    children = [User.query.get(familyChild.studentID) for familyChild in familyChildren]
+    childrenInfo = zip(children, familyChildren)
+
+    # Remember that this route was visited
+    session['url'] = url_for('parent', userID=userID)
+
+    return render_template("portal-parent.html", parent=parent, children=children, familyChildren=familyChildren, childrenInfo=childrenInfo)
 
 @app.route("/portal/student/<int:userID>")
 @login_required
 def student(userID):
 
+    # Retrieve all test types
+    testTypes = TestType.query.all()
+
     # Retrieve information about student 
     student = User.query.filter_by(id=userID).first()
+    familyParents = Family.query.filter_by(studentID=userID).all()
+    parents = [User.query.get(familyParent.parentID) for familyParent in familyParents]
+    parentsInfo = zip(parents, familyParents)
+    overallMeans = OverallMean.query.filter_by(studentID=userID) 
 
-    return render_template("portal-student.html", student=student)
+    # Remember that this route was visited
+    session['url'] = url_for('student', userID=userID)
+    
+    return render_template("portal-student.html", student=student, parents=parents, parentsInfo=parentsInfo, testTypes=testTypes, overallMeans=overallMeans)
+
+@app.route("/portal/<int:userID>/addfamily", methods=["POST"])
+@login_required
+def addFamily(userID):
+
+    # Check via what page request was made
+    submitted = request.form.get("submitted")
+
+    if submitted == "student":
+        
+        # Retrieve user input
+        parentUsername = request.form.get("parent")
+
+        # Checking if that person exists
+        parent = User.query.filter_by(username=parentUsername).first()
+        if parent is None:
+            flash("There is no parent by that username", "warning")
+            return redirect(url_for("student", userID=userID))
+        
+        # Checking if family already exists
+        family = Family.query.filter_by(parentID=parent.id, studentID=userID).first()
+        if family is not None:
+            flash("You already requested a relation with this parent.", "warning")
+            return redirect(url_for("student", userID=userID))
+        
+        # Initiating a new family and adding it to the database
+        family = Family(parentID=parent.id, studentID=userID, pending=True, studentSubmit=True, parentSubmit=False)
+        db.session.add(family)
+        db.session.commit()
+
+        flash("Successfully requested relationship", "success")
+        return redirect(url_for("student", userID=userID))
+    else:
+        # Retrieve user input
+        studentUsername = request.form.get("student")
+
+        # Checking if that person exists
+        student = User.query.filter_by(username=studentUsername).first()
+        if student is None:
+            flash("There is no student by that username", "warning")
+            return redirect(url_for("parent", userID=userID))
+        
+        # Checking if family already exists
+        family = Family.query.filter_by(parentID=userID, studentID=student.id).first()
+        if family is not None:
+            flash("You already requested a relation with this parent.", "warning")
+            return redirect(url_for("parent", userID=userID))
+
+        # Initiating a new family and adding it to the database
+        family = Family(parentID=userID, studentID=student.id, pending=True, studentSubmit=False, parentSubmit=True)
+        db.session.add(family)
+        db.session.commit()
+
+        return redirect(url_for("parent", userID=userID))
+
+@app.route("/portal/pending", methods=["POST"])
+@login_required
+def pending():
+
+    decision = request.form.get("decision")
+    parentID = request.form.get("parentID")
+    studentID = request.form.get("studentID")
+
+    if decision == "accept":
+        family = Family.query.filter_by(parentID=parentID, studentID=studentID).first()
+        family.pending = False
+        db.session.commit()
+    else: 
+        family = Family.query.filter_by(parentID=parentID, studentID=studentID).first()
+        db.session.delete(family)
+        db.session.commit()
+        
+    return redirect(session['url'])
+
 
 @app.route("/portal/student/<int:userID>/addcourse", methods=["POST"])
 @login_required
@@ -290,7 +392,7 @@ def course(userID, courseID):
 def addGrade(userID):
     
     # Retrieving date
-    today = date.today()
+    today = datetime.now()
 
     # Retrieving user information
     courseName = request.form.get("course")
@@ -315,8 +417,8 @@ def addGrade(userID):
 
     # Retrieving all grades from course
     gradeObjects = Grade.query.filter_by(courseID=courseID).all()
-    grades = [int(gradeObject.grade) for gradeObject in gradeObjects]
-    weights = [int(gradeObject.grade) for gradeObject in gradeObjects]
+    grades = [float(gradeObject.grade) for gradeObject in gradeObjects]
+    weights = [float(gradeObject.weight) for gradeObject in gradeObjects]
 
     # Calculating the (weighted) mean of all grades 
     mean = np.average(grades, weights=weights)
@@ -325,6 +427,30 @@ def addGrade(userID):
     meanObject = Mean(courseID=courseID, mean=mean, date=today)
     db.session.add(meanObject)
     db.session.commit()
+
+    # Retrieving all grades from user
+    courses = Course.query.filter_by(studentID=userID).all()
+    overallGradeObjects = []
+    for course in courses:
+        grades = Grade.query.filter_by(courseID=course.id).all()
+        overallGradeObjects += grades 
+    
+    # Retrieving all test types
+    testTypes = TestType.query.all()
+
+    # Calculating the mean for every test type
+    for testType in testTypes:
+        grades = []
+        weights = []
+        for overallGradeObject in overallGradeObjects:
+            if overallGradeObject.typeID == testType.id:
+                grades.append(float(overallGradeObject.grade))
+                weights.append(float(overallGradeObject.weight))
+            
+        mean = np.average(grades, weights=weights)
+        overallMeanObject = OverallMean(studentID=userID, typeID=testType.id, mean=mean, date=today)
+        db.session.add(overallMeanObject)
+        db.session.commit()
 
     return redirect(url_for("course", userID=userID, courseID=courseID))
 
