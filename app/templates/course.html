@@ -26,7 +26,8 @@
         <div class="modal-body">
             <div class="form-group">
                 <label for="addCourse">Course Name</label>
-                <input type="text" name="course" value="{{ course.name }}" class="form-control" id="addCourse" readonly>
+                <input type="hidden" name="course" value="{{ course.id }}">
+                <input type="text" value="{{ course.name }}" class="form-control" id="addCourse" readonly>
             </div>
             <div class="form-group">
                 <label for="addGrade">Grade</label>
@@ -57,15 +58,89 @@
         </div>
     </div>
     </div>
+
     <h3>Mean: {% if course.means|length > 0 %}{{ course.means[-1].mean }} {% endif %}</h3>
-    <!-- List of courses -->
-    <ul>
+    <!-- Table of grades -->
+
+    <table class="table table-sm table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Grade</th>
+            <th scope="col">Weight</th>
+            <th scope="col">Test Type</th>
+            <th scope="col">Last Updated</th>
+            <th scope="col">Test Date</th>
+            <th scoop="col">Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for grade in course.grades %}
+            <tr data-target="#exampleModal">
+                <td>{{ grade.grade }}</td>
+                <td>{{ grade.weight }}</td>
+                <td>{{ grade.testType.name }}</td>
+                <td>{{ grade.dateUpdate }}</td>
+                <td>{{ grade.dateTest }}</td>
+                <td>
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#gradeUpgrade{{ grade.id }}">
+                        Update
+                    </button>
+                </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    <!-- Modal for changing grades or deleting grades -->
     {% for grade in course.grades %}
-        <li>
-            {{ grade.grade }} afgenomen op. {{ grade.dateTest }}. Toegevoegd op {{ grade.dateAdded }}. Last Updated {{ grade.dateUpdate }}. Het is een {{ grade.testType.name }}
-        </li>
+    <div class="modal fade" id="gradeUpgrade{{ grade.id }}" tabindex="-1" role="dialog" aria-labelledby="gradeUpgrade{{ grade.id }}Label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="gradeUpgrade{{ grade.id }}Label">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="{{ url_for('updateGrade', userID=student.id) }}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="addCourse">Course Name</label>
+                        <input type="hidden" name="course" value="{{ course.id }}">
+                        <input type="text" value="{{ course.name }}" class="form-control" id="addCourse" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="addGrade">Grade</label>
+                        <input type="number" min="0" max="10" step="0.01" name="grade" class="form-control" id="addGrade" value="{{ grade.grade }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addWeight">Weight</label>
+                        <input type="number" min="0" max="100" step="0.01" name="weight" class="form-control" id="addWeight" value="{{ grade.weight }}" required>
+                    </div>   
+                    <div class="form-group">
+                        <label for="addTestType">Type Test</label>
+                        <select class="form-control" id="addTestType" name="testType">
+                        {% for testType in testTypes | sort(attribute='name') %}
+                            {% if testType.name == grade.testType.name %}
+                                <option value="{{ testType.id }}" selected="selected">{{ testType.name }}</option>
+                            {% else %}
+                                <option value="{{ testType.id }}">{{ testType.name }}</option>
+                            {% endif %}
+                         {% endfor %}
+                    </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <input type="hidden" name="gradeUpdate" value="{{ grade.id }}">
+                <button type="submit" class="btn btn-danger" name="choice" value="delete">Delete</button>
+                <button type="submit" class="btn btn-primary" name="choice" value="update">Save changes</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>
     {% endfor %}
-    </ul>
 
     <!-- Graphs -->
     <canvas id="myChart"></canvas>
@@ -73,7 +148,7 @@
         const ctx = document.getElementById('myChart');
         const data = {
             // Labels should be Date objects
-            labels: [{% for mean in means %} new Date("{{ mean.date }}".replace(/-/g, ",")), {% endfor %}],
+            labels: [{% for mean in means %} new Date("{{ mean.grade.date }}"), {% endfor %}],
             datasets: [{
                 fill: false,
                 label: 'The mean',
@@ -100,6 +175,7 @@
                     yAxes: [{
                         ticks: {
                             beginAtZero: true,
+                            suggestedMax: 10
                         },
                         display: true,
                         scaleLabel: {

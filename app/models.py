@@ -85,26 +85,26 @@ class Course(db.Model):
     studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     name = db.Column(db.String, nullable=False)
     grades = db.relationship('Grade', lazy=True)
-    means = db.relationship('Mean', lazy=True)
+    means = db.relationship('CourseMean', lazy=True)
 
     def __repr__(self):
         return '<Course %r>' % self.name
 
-class Mean(db.Model):
-    __tablename__  = 'means'
+class CourseMean(db.Model):
+    __tablename__  = 'courseMeans'
     id = db.Column(db.Integer, primary_key=True)
-    courseID = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
+    gradeID = db.Column(db.Integer, db.ForeignKey('grades.id'), nullable=False)
+    grade = db.relationship('Grade', backref="courseMean", lazy=True)
+    courseID = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     mean = db.Column(db.Float, nullable=False)
-    date = db.Column(db.DateTime(timezone=True), nullable=False) 
 
-class OverallMean(db.Model):
-    __tablename__  = 'overalMeans'
+class TypeMean(db.Model):
+    __tablename__  = 'typeMeans'
     id = db.Column(db.Integer, primary_key=True)
     studentID = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     typeID = db.Column(db.Integer, db.ForeignKey('testTypes.id'), nullable=False)
     testType = db.relationship('TestType', lazy=True)
     mean = db.Column(db.Float, nullable=False)
-    date = db.Column(db.DateTime(timezone=True), nullable=False) 
 
 class TestType(db.Model):
     __tablename__ = 'testTypes'
@@ -119,7 +119,7 @@ class Grade(db.Model):
     weight = db.Column(db.Float, nullable=False)
     typeID = db.Column(db.Integer, db.ForeignKey("testTypes.id"), nullable=False)
     testType = db.relationship('TestType', lazy=True)
-    dateAdded = db.Column(db.DateTime(timezone=True), nullable=False)
+    date = db.Column(db.DateTime(timezone=True), nullable=False)
     dateUpdate = db.Column(db.DateTime(timezone=True), nullable=False)
     dateTest = db.Column(db.Date)
 

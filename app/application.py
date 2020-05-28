@@ -243,13 +243,69 @@ def portal():
     # Retrieve all users
     users = User.query.all()
 
-    return render_template("portal.html", users=users)
+    # Retrieving list of schools, levels and years
+    schools = School.query.all()
+    schoolLevels = SchoolLevel.query.all()
+    schoolYears = SchoolYear.query.all()
+
+    return render_template("portal.html", users=users, schools=schools, schoolLevels=schoolLevels, schoolYears=schoolYears)
+
+@app.route("/portal/update", methods=["POST"])
+@login_required
+def update():
+
+    # Retrieve user information
+    userID = request.form.get("userID")
+    user = User.query.get(userID)
+
+    # Retrieve new input by admin
+    username = request.form.get("username")
+    firstName = request.form.get("firstName")
+    lastName = request.form.get("lastName")
+    schoolID = request.form.get("school")
+    levelID = request.form.get("schoolLevel")
+    yearID = request.form.get("schoolYear")
+    roles = request.form.getlist("role")
+
+    # Check the roles of user 
+    admin = False
+    tutor = False
+    parent = False
+    student = False
+    if "admin" in roles:
+        admin = True
+    if "tutor" in roles:
+        tutor = True
+    if "parent" in roles:
+        parent = True
+    if "student" in roles:
+        student = True
+
+    # Update userinformation
+    user.username = username
+    user.firstName = firstName
+    user.lastName = lastName
+    user.schoolID = schoolID
+    user.levelID = levelID
+    user.yearID = yearID
+    user.student = student
+    user.parent = parent
+    user.tutor = tutor
+    user.admin = admin 
+
+    # Commit the changes
+    db.session.commit()
+
+    return redirect(url_for("portal"))
+
 
 @app.route("/portal/tutor")
 @login_required
 def tutor():
     students = User.query.filter_by(student=True).all()
     groups = GroupTime.query.all()
+
+
     return render_template("portal-tutor.html", students=students, groups=groups)
 
 @app.route("/portal/parent/<int:userID>")
@@ -278,12 +334,12 @@ def student(userID):
     familyParents = Family.query.filter_by(studentID=userID).all()
     parents = [User.query.get(familyParent.parentID) for familyParent in familyParents]
     parentsInfo = zip(parents, familyParents)
-    overallMeans = OverallMean.query.filter_by(studentID=userID) 
-
+    typeMeans = TypeMean.query.filter_by(studentID=userID).all() 
+    
     # Remember that this route was visited
     session['url'] = url_for('student', userID=userID)
     
-    return render_template("portal-student.html", student=student, parents=parents, parentsInfo=parentsInfo, testTypes=testTypes, overallMeans=overallMeans)
+    return render_template("portal-student.html", student=student, parents=parents, parentsInfo=parentsInfo, testTypes=testTypes, typeMeans=typeMeans)
 
 @app.route("/portal/<int:userID>/addfamily", methods=["POST"])
 @login_required
@@ -380,7 +436,7 @@ def course(userID, courseID):
     # Retrieve information about student and course
     student = User.query.filter_by(id=userID).first()
     course = Course.query.filter_by(id=courseID).first()
-    means = Mean.query.filter_by(courseID=courseID).all()
+    means = CourseMean.query.filter_by(courseID=courseID).all()
 
     # Retrieve all test types
     testTypes = TestType.query.all()
@@ -395,21 +451,17 @@ def addGrade(userID):
     today = datetime.now()
 
     # Retrieving user information
-    courseName = request.form.get("course")
+    courseID = request.form.get("course")
     grade = request.form.get("grade")
     weight = request.form.get("weight")
     testTypeID = request.form.get("testType")
     dateTest = request.form.get("dateTest")
 
-    # Retrieving course id
-    course = Course.query.filter_by(studentID=userID, name=courseName).first()
-    courseID = course.id
-
     # Initiating new grade object 
     if dateTest == '':
-        grade = Grade(courseID=courseID, grade=grade, weight=weight, typeID=testTypeID, dateAdded=today, dateUpdate=today)
+        grade = Grade(courseID=courseID, grade=grade, weight=weight, typeID=testTypeID, date=today, dateUpdate=today)
     else: 
-        grade = Grade(courseID=courseID, grade=grade, weight=weight, typeID=testTypeID, dateAdded=today, dateUpdate=today, dateTest=dateTest)
+        grade = Grade(courseID=courseID, grade=grade, weight=weight, typeID=testTypeID, date=today, dateUpdate=today, dateTest=dateTest)
     
     # Adding grade to database
     db.session.add(grade)
@@ -424,16 +476,16 @@ def addGrade(userID):
     mean = np.average(grades, weights=weights)
 
     # Iniating mean object and adding it to database
-    meanObject = Mean(courseID=courseID, mean=mean, date=today)
+    meanObject = CourseMean(gradeID=grade.id, courseID=courseID, mean=mean)
     db.session.add(meanObject)
     db.session.commit()
 
     # Retrieving all grades from user
     courses = Course.query.filter_by(studentID=userID).all()
-    overallGradeObjects = []
+    typeGradeObjects = []
     for course in courses:
         grades = Grade.query.filter_by(courseID=course.id).all()
-        overallGradeObjects += grades 
+        typeGradeObjects += grades 
     
     # Retrieving all test types
     testTypes = TestType.query.all()
@@ -442,15 +494,141 @@ def addGrade(userID):
     for testType in testTypes:
         grades = []
         weights = []
-        for overallGradeObject in overallGradeObjects:
-            if overallGradeObject.typeID == testType.id:
-                grades.append(float(overallGradeObject.grade))
-                weights.append(float(overallGradeObject.weight))
-            
-        mean = np.average(grades, weights=weights)
-        overallMeanObject = OverallMean(studentID=userID, typeID=testType.id, mean=mean, date=today)
-        db.session.add(overallMeanObject)
-        db.session.commit()
+        for typeGradeObject in typeGradeObjects:
+            if typeGradeObject.typeID == testType.id:
+                grades.append(float(typeGradeObject.grade))
+                weights.append(float(typeGradeObject.weight))
+                
+        if len(grades) > 0:
+            mean = np.average(grades, weights=weights)
 
+            # Retrieve old means
+            typeMeanObject = TypeMean.query.filter_by(studentID=userID, typeID=testType.id).first()
+
+            # Add new values to database
+            if typeMeanObject is None:
+                typeMeanObject = TypeMean(studentID=userID, typeID=testType.id, mean=mean)
+                db.session.add(typeMeanObject)
+            else:
+                typeMeanObject.mean = mean
+            db.session.commit()
+
+    flash("Succussfully added grade.", "success")
     return redirect(url_for("course", userID=userID, courseID=courseID))
 
+@app.route("/portal/student/<int:userID>/updategrade", methods=["POST"])
+def updateGrade(userID):
+
+    # Retrieving date
+    today = datetime.now()
+
+    # Retrieving information and the user decision
+    choice = request.form.get("choice")
+    gradeID = request.form.get("gradeUpdate")
+    grade = Grade.query.get(gradeID)
+    courseID = request.form.get("course")
+    currentCourse = Course.query.get(courseID)
+
+    # Update information
+    gradeNew = float(request.form.get("grade"))
+    weightNew = float(request.form.get("weight"))
+    testTypeIDNew = int(request.form.get("testType"))
+    dateTestNew = request.form.get("dateTest")
+
+    # Retrieving all courses from user
+    courses = Course.query.filter_by(studentID=userID).all()
+
+    # Retrieving all grades from user
+    grades = []
+    for course in courses:
+        grades += Grade.query.filter_by(courseID=course.id).all()
+
+    # Retrieve all test types
+    testTypes = TestType.query.all()
+    
+    # Retrieving means from student: course, type
+    courseMeans = CourseMean.query.filter_by(courseID=courseID).all()
+    typeMeans = TypeMean.query.filter_by(studentID=userID).all()
+
+    # Sort all the means on date (older to newer)
+    courseMeans.sort(key=lambda courseMean: courseMean.grade.date)
+        
+    # Variables that keep track of the total weight
+    courseWeight = 0
+    totalWeight = {}
+    for testType in testTypes:
+        totalWeight[testType.name] = 0     
+
+    # Recalculating all the course means 
+    for courseMean in courseMeans:
+
+        # Updating weights 
+        courseWeight += courseMean.grade.weight
+        totalWeight[courseMean.grade.testType.name] += courseMean.grade.weight 
+        
+        # If user wants to delete grade
+        if choice == "delete":
+
+            # Checking if there is only one grade in the course 
+            if len(currentCourse.grades) == 1:
+                db.session.delete(courseMean)
+                db.session.commit()
+            else:
+                if courseMean.grade.date == grade.date:
+                    db.session.delete(courseMean)
+            
+            # Redefining the old means
+            if courseMean.grade.date > grade.date:
+                courseMean.mean = (courseMean.mean * courseWeight -  grade.grade * grade.weight) / (courseWeight - grade.weight) 
+
+        # If user is updating grade
+        else: 
+            if courseMean.grade.date == grade.date:
+                courseMean.mean = (courseMean.mean * courseWeight - grade.grade * grade.weight + gradeNew * weightNew) / (courseWeight - grade.weight + weightNew)
+
+            # Redefining the old means
+            elif courseMean.grade.date > grade.date:
+                courseMean.mean = (courseMean.mean * courseWeight -  grade.grade * grade.weight + gradeNew * weightNew) / (courseWeight - grade.weight + weightNew) 
+
+    # Recalculating the mean per test type
+    for typeMean in typeMeans:
+        
+        # If user wants to delete grade
+        if choice == "delete":
+
+            # Checking if there is only one grade for test type
+            if totalWeight[typeMean.testType.name] - grade.weight == 0:
+                db.session.delete(typeMean)
+            else:
+                typeMean.mean = (typeMean.mean * totalWeight[typeMean.testType.name] - grade.grade * grade.weight) / (totalWeight[typeMean.testType.name] - grade.weight)
+       
+        # If user wants to update grade
+        else:
+            if typeMean.testType.id == testTypeIDNew:
+                typeMean.mean = (typeMean.mean * totalWeight[typeMean.testType.name] - grade.grade * grade.weight + gradeNew * weightNew) / (totalWeight[typeMean.testType.name] - grade.weight + weightNew)
+                
+            elif typeMean.testType.id == grade.typeID:
+
+                # Checking if there is only one grade for test type
+                if totalWeight[typeMean.testType.name] - grade.weight == 0:
+                    db.session.delete(typeMean)
+                else:
+                    typeMean.mean = (typeMean.mean * totalWeight[typeMean.testType.name] + gradeNew * weightNew) / (totalWeight[typeMean.testType.name] + weightNew)   
+    
+        # Comitting all changes
+        db.session.commit()
+
+    # Removing grade
+    if choice == "delete":
+        db.session.delete(grade)
+        flash("Successfully deleted grade", "success")
+    else: 
+        grade.grade = gradeNew
+        grade.weight = weightNew
+        grade.typeID = testTypeIDNew
+        grade.dateUpdate = today
+        grade.dateTest = dateTestNew
+        flash("Successfully updated grade", "success")
+    db.session.commit()
+
+    return redirect(url_for("course", userID=userID, courseID=courseID))

@@ -6,7 +6,6 @@
 
 {% block body %}
   <h1>Welcome {{ student.firstName }} {{  student.lastName  }}</h1>
-
     <!-- Button for adding course -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addGradeModal">
         Add Course
@@ -80,7 +79,6 @@
         </div>
     </div>
     </div>
-
     <!-- List of parents -->
     <ul>
         {% for parent, familyParent in parentsInfo %}
@@ -148,7 +146,8 @@
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        suggestedMax: 10
                     }
                 }]
             }
@@ -157,10 +156,9 @@
     </script>
     <canvas id="myRadar"></canvas>
     <script>
-        new Chart(document.getElementById("myRadar"), {
-        type: 'radar',
-        data: {
-        labels: [{% for overallMean in overallMeans %} "{{ overallMean.testType.name }}", {% endfor %}],
+        const ctxRadar = document.getElementById("myRadar");
+        const dataRadar = {
+            labels: [{% for typeMean in typeMeans %} "{{ typeMean.testType.name }}", {% endfor %}],
         datasets: [
             {
             label: "Mean grade",
@@ -170,16 +168,25 @@
             pointBorderColor: "#fff",
             pointBackgroundColor: "rgba(255,99,132,1)",
             pointBorderColor: "#fff",
-            data: [{% for overallMean in overallMeans %} {{ overallMean.mean }}, {% endfor %}]
+            data: [{% for typeMean in typeMeans %} {{ typeMean.mean }}, {% endfor %}]
             }
         ]
-        },
-        options: {
-        title: {
-            display: false,
-            text: 'The mean grade per test type'
-        }
-        }
-    });
+        };
+        const optionsRadar = {
+            scale: {
+                angleLines: {
+                display: false
+                },
+            ticks: {
+                suggestedMin: 0,
+                suggestedMax: 10
+                }
+            }
+        };
+        var myRadarChart = new Chart(ctxRadar, {
+        type: 'radar',
+        data: dataRadar,
+        options: optionsRadar
+        });    
     </script>
 {% endblock %}

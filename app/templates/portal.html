@@ -5,8 +5,11 @@
 {% endblock %}
 
 {% block body %}
+  <h1>Search</h1>
+  <input type="text" class="table-filter" data-table="order-table" placeholder="Users to filter">
+
   <h1>Students</h1>
-  <table class="table table-hover">
+  <table class="table table-sm table-hover sortable order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
@@ -14,59 +17,178 @@
         <th scope="col">Username</th>
         <th scope="col">Email</th>
         <th scope="col">School</th>
-        <th scope="col">Mean</th>
-        <th scope="col">Change Role</th> 
+        <th scope="col">Change Info</th> 
       </tr>
     </thead>
     <tbody>
       {% for user in users %}
       {% if user.student %}
-      <tr data-href="{{ url_for('student', userID=user.id) }}">
-        <td>{{ user.firstName }}</td>
-        <td>{{ user.lastName }}</td>
-        <td>{{ user.username }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ user.school.name }}</td>
-        <td>Hello</td>
+      <tr>
+        <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.firstName }}</td>
+        <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.lastName }}</td>
+        <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.username }}</td>
+        <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.email }}</td>
+        <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.school.name }}</td>
+        <td>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-primary btn-sm update-button" data-toggle="modal" data-target="#studentModal{{ user.id }}Long">
+              Change
+            </button>
+        </td>
       </tr>
       {% endif %}
       {% endfor %}
     </tbody>
   </table>
+
+{% for user in users %}
+{% if user.student %}
+<!-- Student Modal -->
+<div class="modal fade" id="studentModal{{ user.id }}Long" tabindex="-1" role="dialog" aria-labelledby="studentModal{{ user.id }}LongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="studentModal{{ user.id }}LongTitle">Update or Change User Information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{{ url_for('update') }}" method="post">
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="addCourse">Username</label>
+                <input type="hidden" value="{{ user.id }}" name="userID">
+                <input type="text" value="{{ user.username }}" name="username" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="addGrade">First Name</label>
+                <input type="text" value="{{ user.firstName }}" name="firstName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="addWeight">Last Name</label>
+                <input type="text" value="{{ user.lastName }}" name="lastName" class="form-control">
+            </div> 
+            <div class="form-group">
+              <label for="addWeight">Last Name</label>
+              <input type="email" value="{{ user.email }}" name="email" class="form-control">
+            </div>     
+            <div class="form-group">
+                <label for="addTestType">School</label>
+                <select class="form-control" id="school" name="school">
+                  {% for school in schools | sort(attribute='name') %}
+                  {% if user.schoolID == school.id %}
+                    <option value="{{ school.id }}" selected="selected">{{ school.name }}</option>
+                  {% else %}
+                    <option value="{{ school.id }}">{{ school.name }}</option>
+                  {% endif %}
+                  {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+              <label for="addTestType">School Level</label>
+              <select class="form-control" id="schoolLevel" name="school">
+                {% for schoolLevel in schoolLevels | sort(attribute='name') %}
+                {% if user.levelID == schoolLevel.id %}
+                  <option value="{{ schoolLevel.id }}" selected="selected">{{ schoolLevel.name }}</option>
+                {% else %}
+                  <option value="{{ schoolLevel.id }}">{{ schoolLevel.name }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+          </div>
+          <div class="form-group">
+            <label for="addTestType">School Year</label>
+            <select class="form-control" id="schoolYear" name="school">
+              {% for schoolYear in schoolYears | sort(attribute='year') %}
+              {% if user.yearID == schoolYear.id %}
+                <option value="{{ schoolYear.id }}" selected="selected">{{ schoolYear.year }}</option>
+              {% else %}
+                <option value="{{ schoolYear.id }}">{{ schoolYear.year }}</option>
+              {% endif %}
+              {% endfor %}
+            </select>
+        </div>
+            <div class="form-group">
+            <label class="checkbox-inline">
+              {% if user.student %}
+              <input value="student" type="checkbox" name="role" id="student" checked> Student
+              {% else %}
+              <input value="student" type="checkbox" name="role" id="student"> Student
+              {% endif %}
+            </label>
+            <label class="checkbox-inline">
+              {% if user.parent %}
+              <input value="parent" type="checkbox" name="role" id="parent" checked> Parent
+              {% else %}
+              <input value="parent" type="checkbox" name="role" id="parent"> Parent
+              {% endif %}
+            </label>
+            <label class="checkbox-inline">
+              {% if user.tutor %}
+              <input value="tutor" type="checkbox" name="role" id="tutor" checked> Tutor
+              {% else %}
+              <input value="tutor" type="checkbox" name="role" id="tutor"> Tutor
+              {% endif %}
+            </label>
+            <label class="checkbox-inline">
+              {% if user.admin %}
+              <input value="admin" type="checkbox" name="role" id="admin" checked> Admin
+              {% else %}
+              <input value="admin" type="checkbox" name="role" id="admin"> Admin
+              {% endif %}
+            </label>
+            </div>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+    </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+
   <h1>Parents</h1>
-  <table class="table table-hover">
+  <table class="table table-sm table-hover order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
         <th scope="col">Last Name</th>
         <th scope="col">Username</th>
         <th scope="col">Email</th>
-        <th scope="col">Change Role</th> 
+        <th scope="col">Change Info</th> 
       </tr>
     </thead>
     <tbody>
       {% for user in users %}
       {% if user.parent %}
         <tr data-href="{{ url_for('parent', userID=user.id) }}">
-          <td>{{ user.firstName }}</td>
-          <td>{{ user.lastName }}</td>
-          <td>{{ user.username }}</td>
-          <td>{{ user.email }}</td>
-          
+          <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.firstName }}</td>
+          <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.lastName }}</td>
+          <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.username }}</td>
+          <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.email }}</td>
+          <td>
+             <!-- Button trigger modal -->
+             <button type="button" class="btn btn-outline-primary btn-sm update-button" data-toggle="modal" data-target="#otherModal{{ user.id }}Long">
+              Change
+            </button>
+          </td>
         </tr>
       {% endif %}
       {% endfor %}
     </tbody>
   </table>
   <h1>Tutors</h1>
-  <table class="table table-hover">
+  <table class="table table-sm table-hover order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
         <th scope="col">Last Name</th>
         <th scope="col">Username</th>
         <th scope="col">Email</th>
-        <th scope="col">Change Role</th> 
+        <th scope="col">Change Info</th> 
       </tr>
     </thead>
     <tbody>
@@ -74,10 +196,16 @@
         {% for user in users %}
         {% if user.tutor %}
           <tr data-href="{{ url_for('tutor') }}">
-            <td>{{ user.firstName }}</td>
-            <td>{{ user.lastName }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
+            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.firstName }}</td>
+            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.lastName }}</td>
+            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.username }}</td>
+            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.email }}</td>
+            <td>
+               <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-primary btn-sm update-button" data-toggle="modal" data-target="#otherModal{{ user.id }}Long">
+              Change
+            </button>
+            </td>
           </tr>
         {% endif %}
         {% endfor %}
@@ -85,14 +213,14 @@
     </tbody>
   </table>
   <h1>Admins</h1>
-  <table class="table table-hover">
+  <table class="table table-sm table-hover order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
         <th scope="col">Last Name</th>
         <th scope="col">Username</th>
         <th scope="col">Email</th>
-        <th scope="col">Change Role</th> 
+        <th scope="col">Change Info</th> 
       </tr>
     </thead>
     <tbody>
@@ -100,14 +228,93 @@
         {% for user in users %}
         {% if user.admin %}
           <tr>
-            <td>{{ user.firstName }}</td>
-            <td>{{ user.lastName }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
+            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.firstName }}</td>
+            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.lastName }}</td>
+            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.username }}</td>
+            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.email }}</td>
+            <td>
+              <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-primary btn-sm update-button" data-toggle="modal" data-target="#otherModal{{ user.id }}Long">
+              Change
+            </button>
+            </td>
           </tr>
         {% endif %}
         {% endfor %}
       </tr>
     </tbody>
   </table>
+
+  {% for user in users %}
+{% if user.tutor or user.parent or user.admin %}
+<!-- Other Modal -->
+<div class="modal fade" id="otherModal{{ user.id }}Long" tabindex="-1" role="dialog" aria-labelledby="otherModal{{ user.id }}LongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="otherModal{{ user.id }}LongTitle">Update or Change User Information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{{ url_for('update') }}" method="post">
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="addCourse">Username</label>
+                <input type="hidden" value="{{ user.id }}" name="userID">
+                <input type="text" value="{{ user.username }}" name="username" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="addGrade">First Name</label>
+                <input type="text" value="{{ user.firstName }}" name="firstName" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="addWeight">Last Name</label>
+                <input type="text" value="{{ user.lastName }}" name="lastName" class="form-control">
+            </div> 
+            <div class="form-group">
+              <label for="addWeight">Last Name</label>
+              <input type="email" value="{{ user.email }}" name="email" class="form-control">
+            </div>     
+            <div class="form-group">
+            <label class="checkbox-inline">
+              {% if user.student %}
+              <input value="student" type="checkbox" name="role" id="student" checked> Student
+              {% else %}
+              <input value="student" type="checkbox" name="role" id="student"> Student
+              {% endif %}
+            </label>
+            <label class="checkbox-inline">
+              {% if user.parent %}
+              <input value="parent" type="checkbox" name="role" id="parent" checked> Parent
+              {% else %}
+              <input value="parent" type="checkbox" name="role" id="parent"> Parent
+              {% endif %}
+            </label>
+            <label class="checkbox-inline">
+              {% if user.tutor %}
+              <input value="tutor" type="checkbox" name="role" id="tutor" checked> Tutor
+              {% else %}
+              <input value="tutor" type="checkbox" name="role" id="tutor"> Tutor
+              {% endif %}
+            </label>
+            <label class="checkbox-inline">
+              {% if user.admin %}
+              <input value="admin" type="checkbox" name="role" id="admin" checked> Admin
+              {% else %}
+              <input value="admin" type="checkbox" name="role" id="admin"> Admin
+              {% endif %}
+            </label>
+            </div>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+    </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endfor %}
 {% endblock %}

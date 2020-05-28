@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
         status[x] = false;
         document.querySelector('#submit').disabled = true;
     }
-
     // Function that updates status and sets it to true and enables button when necessary
     function true_status(x){
         status[x] = true;
