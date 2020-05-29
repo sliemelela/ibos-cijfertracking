@@ -1,9 +1,49 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Welcome
+  IBOS
 {% endblock %}
 
 {% block body %}
-  
+<!-- Main Content -->
+<section id="showcase"> 
+  <div class="container-fluid" id="title-container">
+    <h1 class="fade-in">IBOS<span class="small-invs"></span></h1>
+    <p  class="fade-in">
+      Want help by doing extra tutoring courses, look no further! 
+      <span class="small-invs">On this website you can find !</span> 
+    </p>
+    <button type="button" class="btn btn-light">Read more!</button>
+    <button type="button" class="btn btn-outline-light">Reading List</button>
+  </div>
+</section>
+
+<section id="subjects" class="row">
+<div class="col">
+<a href="euler.html"><img src="img/euler.jpg" alt="Painting of Euler"></a>
+<p>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+Maecenas non erat ac ex convallis condimentum et eu felis. 
+Sed id massa viverra, viverra augue sit amet, posuere lacus. Donec congue eu eros sit amet euismod.
+</p>
+</div>
+
+<div class="col">
+<a href="pythagoras.html"><img src="img/pythagoras.jpg" alt="Painting of Pythagoras"></a>
+<p>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+Maecenas non erat ac ex convallis condimentum et eu felis. 
+Sed id massa viverra, viverra augue sit amet, posuere lacus. Donec congue eu eros sit amet euismod.
+</p>
+</div>
+
+<div class="col">
+<a href="gauss.html"><img src="img/gauss.jpg" alt="Painting of Gauss"></a>
+<p>
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+Maecenas non erat ac ex convallis condimentum et eu felis. 
+Sed id massa viverra, viverra augue sit amet, posuere lacus. Donec congue eu eros sit amet euismod.
+</p>
+</div>
+</section>
 {% endblock %}

@@ -68,6 +68,8 @@ Plan for Sunday:
 
 Plan for tomorrow: Add all other feautures, and finish alpha version.
 
+## Week 2
+
 ### Monday, May 25th 2020
 - Added overview of all users in admin portal.
     - Still to be implemented:
@@ -128,3 +130,31 @@ I have combed through most mistakes, but I must say it took way longer than I ev
     - If I would implement this, I would assume that the weights that every teacher assigns per course, would be equal, but this would be naive.
 
 Due to the numerous of possibilies and the lack of convention, I have determined that the overall mean is not an insightful metric to include. This saves me time, the database space and also saves the web-app a little bit of time calculating stuff.
+
+### Thursday, May 28th 2020
+- Polished the front end.
+- Added some animations (some of which I may remove).
+- Fixed some bugs along the way.
+
+Still to do:
+- Functionality to delete parents/children.
+- Functionality to add students to groups from tutor page.
+- Fill in dummy text in contact, testimonials (or remove those pages).
+- Polish code.
+- Make screencast.
+
+Note to self: Could have definitely worked harder today, but I was a little bit tired from last week, hence the decrease in performance today. Tomorrow is the final day I can do.
+
+### Friday, May 29th 2020
+- Added the delete parents/children functionality.
+- Added the functionality for the tutor to add new students to groups and reassign them as well.
+- Gave the tutor page a face lift.
+- Gave the parent page a face lift.
+- Fixed some bugs along the way. 
+- Made screencast:
+    - I am not that happy with my screencast. I could be better, if it is permitted, I will refilm it on a later date (tomorrow for instance).
+
+Plans for weekend:
+- Polish code.
+- Maybe give the site a better front end design.
+- Maybe redo the screencast. 

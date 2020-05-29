@@ -36,7 +36,9 @@ class User(UserMixin, db.Model):
     schoolID = db.Column(db.Integer, db.ForeignKey("schools.id"))
     school = db.relationship('School', lazy=True)
     levelID = db.Column(db.Integer, db.ForeignKey("schoolLevels.id"))
+    level = db.relationship('SchoolLevel', lazy=True)
     yearID = db.Column(db.Integer, db.ForeignKey("schoolYears.id"))
+    year = db.relationship('SchoolYear',lazy=True)
     courses = db.relationship('Course', lazy=True)
 
     def __repr__(self):
@@ -66,7 +68,7 @@ class StudentGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     groupID = db.Column(db.Integer, db.ForeignKey("groupTimes.id"), nullable=False)
     studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    students = db.relationship('User', lazy=True)
+    students = db.relationship('User', backref="studentGroup", lazy=True)
 
 # Class that keeps track of student absences 
 class StudentAbsent(db.Model):

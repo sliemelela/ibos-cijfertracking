@@ -5,14 +5,15 @@
 {% endblock %}
 
 {% block body %}
+<div class="container p-3">
   <h1>Course: {{ course.name }}</h1>
 
-    <!-- Button for adding course -->
+    <!-- Button for adding grade -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addGradeModel">
         Add Grade
     </button>
   
-    <!-- Modal for adding course -->
+    <!-- Modal for adding grade -->
     <div class="modal fade" id="addGradeModel" tabindex="-1" role="dialog" aria-labelledby="addGradeModelLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -59,7 +60,10 @@
     </div>
     </div>
 
-    <h3>Mean: {% if course.means|length > 0 %}{{ course.means[-1].mean }} {% endif %}</h3>
+    <div class="row">
+
+    <div class="col">
+    <h3>Mean: {% if course.means|length > 0 %}{{ course.means[-1].mean|round(2) }} {% endif %}</h3>
     <!-- Table of grades -->
 
     <table class="table table-sm table-hover">
@@ -79,8 +83,8 @@
                 <td>{{ grade.grade }}</td>
                 <td>{{ grade.weight }}</td>
                 <td>{{ grade.testType.name }}</td>
-                <td>{{ grade.dateUpdate }}</td>
-                <td>{{ grade.dateTest }}</td>
+                <td>{{ grade.dateUpdate.strftime("%d-%m-%Y") }}</td>
+                <td>{% if grade.dateTest %}{{ grade.dateTest.strftime("%d-%m-%Y") }}{% endif %}</td>
                 <td>
                     <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#gradeUpgrade{{ grade.id }}">
                         Update
@@ -90,7 +94,7 @@
           {% endfor %}
         </tbody>
       </table>
-
+    </div>
     <!-- Modal for changing grades or deleting grades -->
     {% for grade in course.grades %}
     <div class="modal fade" id="gradeUpgrade{{ grade.id }}" tabindex="-1" role="dialog" aria-labelledby="gradeUpgrade{{ grade.id }}Label" aria-hidden="true">
@@ -129,6 +133,10 @@
                          {% endfor %}
                     </select>
                     </div>
+                    <div class="form-group">
+                        <label for="addDateTest">Date Test</label>
+                        <input type="date" name="dateTest" class="form-control" id="addDateTest" placeholder="Date">
+                    </div>
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -142,8 +150,11 @@
     </div>
     {% endfor %}
 
+    <div class="col">
     <!-- Graphs -->
     <canvas id="myChart"></canvas>
+    </div>   
+    </div>  
     <script>
         const ctx = document.getElementById('myChart');
         const data = {
@@ -188,5 +199,5 @@
         };
         const chart = new Chart(ctx, options);
     </script>
-    
+</div>
 {% endblock %}

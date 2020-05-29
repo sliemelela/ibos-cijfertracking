@@ -302,12 +302,45 @@ def update():
 @app.route("/portal/tutor")
 @login_required
 def tutor():
+
+    # Retrieving list of schools, levels and years
+    schools = School.query.all()
+    schoolLevels = SchoolLevel.query.all()
+    schoolYears = SchoolYear.query.all()
+
+    # Retrieve info about all students
     students = User.query.filter_by(student=True).all()
     groups = GroupTime.query.all()
 
+    return render_template("portal-tutor.html", students=students, groups=groups, schools=schools, schoolLevels=schoolLevels, schoolYears=schoolYears)
 
-    return render_template("portal-tutor.html", students=students, groups=groups)
+@app.route("/portal/tutor/update", methods=["POST"])
+def tutorUpdate():
 
+    # Retrieving user input
+    studentID = request.form.get("student")
+    groupID = request.form.get("group")
+    schoolID = request.form.get("school")
+    levelID = request.form.get("schoolLevel")
+    yearID = request.form.get("schoolYear")
+
+    # Changing user information
+    student = User.query.get(studentID)
+    student.schoolID = schoolID
+    student.levelID = levelID
+    student.yearID = yearID
+
+    # Adding student to a group if student was groupless
+    studentGroup = StudentGroup.query.filter_by(studentID=studentID).first()
+    if studentGroup is None:
+        studentGroup = StudentGroup(groupID=groupID, studentID=studentID)
+        db.session.add(studentGroup)
+    else:
+        studentGroup.groupID = groupID
+    
+    db.session.commit()
+
+    return redirect(url_for('tutor'))
 @app.route("/portal/parent/<int:userID>")
 def parent(userID):
 
@@ -373,6 +406,7 @@ def addFamily(userID):
         flash("Successfully requested relationship", "success")
         return redirect(url_for("student", userID=userID))
     else:
+        
         # Retrieve user input
         studentUsername = request.form.get("student")
 
@@ -399,16 +433,19 @@ def addFamily(userID):
 @login_required
 def pending():
 
+    # Retrieving user input
     decision = request.form.get("decision")
     parentID = request.form.get("parentID")
     studentID = request.form.get("studentID")
 
+    # Retrieving relevant family
+    family = Family.query.filter_by(parentID=parentID, studentID=studentID).first()
+
+    # Accepting, denying or deleting the relation
     if decision == "accept":
-        family = Family.query.filter_by(parentID=parentID, studentID=studentID).first()
         family.pending = False
         db.session.commit()
     else: 
-        family = Family.query.filter_by(parentID=parentID, studentID=studentID).first()
         db.session.delete(family)
         db.session.commit()
         

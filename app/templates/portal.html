@@ -5,6 +5,8 @@
 {% endblock %}
 
 {% block body %}
+<div class="container p-3">
+
   <h1>Search</h1>
   <input type="text" class="table-filter" data-table="order-table" placeholder="Users to filter">
 
@@ -86,7 +88,7 @@
             </div>
             <div class="form-group">
               <label for="addTestType">School Level</label>
-              <select class="form-control" id="schoolLevel" name="school">
+              <select class="form-control" id="schoolLevel" name="schoolLevel">
                 {% for schoolLevel in schoolLevels | sort(attribute='name') %}
                 {% if user.levelID == schoolLevel.id %}
                   <option value="{{ schoolLevel.id }}" selected="selected">{{ schoolLevel.name }}</option>
@@ -98,7 +100,7 @@
           </div>
           <div class="form-group">
             <label for="addTestType">School Year</label>
-            <select class="form-control" id="schoolYear" name="school">
+            <select class="form-control" id="schoolYear" name="schoolYear">
               {% for schoolYear in schoolYears | sort(attribute='year') %}
               {% if user.yearID == schoolYear.id %}
                 <option value="{{ schoolYear.id }}" selected="selected">{{ schoolYear.year }}</option>
@@ -151,7 +153,7 @@
 {% endfor %}
 
   <h1>Parents</h1>
-  <table class="table table-sm table-hover order-table">
+  <table class="table table-sm table-hover sortable order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
@@ -164,11 +166,11 @@
     <tbody>
       {% for user in users %}
       {% if user.parent %}
-        <tr data-href="{{ url_for('parent', userID=user.id) }}">
-          <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.firstName }}</td>
-          <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.lastName }}</td>
-          <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.username }}</td>
-          <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.email }}</td>
+        <tr>
+          <td data-href="{{ url_for('parent', userID=user.id) }}">{{ user.firstName }}</td>
+          <td data-href="{{ url_for('parent', userID=user.id) }}">{{ user.lastName }}</td>
+          <td data-href="{{ url_for('parent', userID=user.id) }}">{{ user.username }}</td>
+          <td data-href="{{ url_for('parent', userID=user.id) }}">{{ user.email }}</td>
           <td>
              <!-- Button trigger modal -->
              <button type="button" class="btn btn-outline-primary btn-sm update-button" data-toggle="modal" data-target="#otherModal{{ user.id }}Long">
@@ -181,7 +183,7 @@
     </tbody>
   </table>
   <h1>Tutors</h1>
-  <table class="table table-sm table-hover order-table">
+  <table class="table table-sm table-hover sortable order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
@@ -213,7 +215,7 @@
     </tbody>
   </table>
   <h1>Admins</h1>
-  <table class="table table-sm table-hover order-table">
+  <table class="table table-sm table-hover sortable order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
@@ -245,7 +247,7 @@
     </tbody>
   </table>
 
-  {% for user in users %}
+{% for user in users %}
 {% if user.tutor or user.parent or user.admin %}
 <!-- Other Modal -->
 <div class="modal fade" id="otherModal{{ user.id }}Long" tabindex="-1" role="dialog" aria-labelledby="otherModal{{ user.id }}LongTitle" aria-hidden="true">
@@ -317,4 +319,6 @@
 </div>
 {% endif %}
 {% endfor %}
+
+</div>
 {% endblock %}

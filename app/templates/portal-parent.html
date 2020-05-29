@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block body %}
+<div class="container p-3">
 <h1>Welcome {{ parent.firstName }} {{  parent.lastName  }}</h1>
 
       <!-- Button for adding child -->
@@ -40,24 +41,65 @@
     </div>
     </div>
 
-  <h3>My children</h3>
-  {% if childrenInfo %}
-    {% for child, familyChild in childrenInfo %}
-      {% if (familyChild.pending) and (familyChild.studentSubmit)%}
-        <h5>{{ child.firstName }} {{ child.lastName }} is requesting relation.</h5>
-        <form action="{{ url_for('pending') }}" method="post">
-          <button type="submit" class="btn btn-success" name="decision" value="accept">Accept</button>
-          <button type="submit" class="btn btn-secondary" name="decision" value="deny">Deny</button>
-          <input type="hidden" name="studentID" value="{{ familyChild.studentID }}">
-          <input type="hidden" name="parentID" value="{{ parent.id }}">
-        </form>
-      {% elif (familyChild.pending) and (familyChild.parentSubmit) %}
-      <p>Pending {{ child.firstName}} {{ child.lastName }}</p>
-      {% else %}
-      <a href="{{ url_for('student', userID=child.id) }}"><p>{{ child.firstName}} {{ child.lastName }}</p></a>
-      {% endif %}
-    {% endfor %}
-    {% else %}
-      <p>No children</p>
-  {% endif %}
+
+    <h2> My Children </h2>
+    <form action="{{ url_for('pending') }}" method="post">
+    <table class="table table-sm table-hover sortable order-table">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Username</th>
+            <th scope="col">Accepted</th>
+            <th scope="col">Accept</th>
+            <th scope="col">Deny</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for child, familyChild in childrenInfo %}
+            {% if familyChild.pending == False %}
+          <tr>
+            <td data-href="{{ url_for('student', userID=child.id) }}">{{ child.firstName }}</td>
+            <td data-href="{{ url_for('student', userID=child.id) }}">{{ child.lastName }}</td>
+            <td data-href="{{ url_for('student', userID=child.id) }}">{{ child.username }}</td>
+            <td>Yes</td>
+            <td></td>
+            <td></td>
+            <td>
+              <input type="hidden" name="parentID" value="{{ parent.id }}">
+              <input type="hidden" name="studentID" value="{{ familyChild.studentID }}">
+              <button type="submit" class="btn btn-sm btn-danger" name="decision" value="delete">Delete</button>
+            </td>
+          </tr>
+            {% elif (familyChild.pending) and (familyChild.studentSubmit) %}
+            <tr>
+                <td>{{ child.firstName }}</td>
+                <td>{{ child.lastName }}</td>
+                <td>{{ child.username }}</td>
+                <td>Requesting Relation</td>
+                <td>
+                    <input type="hidden" name="parentID" value="{{ parent.id }}">
+                    <input type="hidden" name="studentID" value="{{ familyChild.studentID }}">
+                    <button type="submit" class="btn btn-sm btn-success" name="decision" value="accept">Accept</button>
+                </td>
+                <td>
+                    <button type="submit" class="btn btn-sm btn-secondary" name="decision" value="deny">Deny</button>
+                </td>
+            </tr>
+            {% elif (familyChild.pending) and (familyChild.parentSubmit) %}
+            <tr>
+                <td>{{ child.firstName }}</td>
+                <td>{{ child.lastName }}</td>
+                <td>{{ child.username }}</td>
+                <td>No</td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+      </form>
+</div>
 {% endblock %}

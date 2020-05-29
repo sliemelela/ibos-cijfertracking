@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
   <!-- Required meta tags -->
+  <!-- Metadata -->
   <meta charset="utf-8">
+  <meta name="description" content="Het IBOS is opgericht in 1987 door twee eigenzinnige psychologen/pedagogen, John Biharie en Freke Freriks. Beiden hebben veel kwaliteiten op hun vakgebied. Het IBOS is een onafhankelijk instituut, waar volwassenen/kinderen uit heel Nederland naar toe komen voor psychologisch onderzoek en behandeling van leer- en andere problemen. Het IBOS is uitgegroeid tot een van de grootste instituten van Nederland en is al regelmatig op TV geweest.">
+  <meta name="keywords" content="Onderwijs, Basisonderwijs,Voortgezet onderwijs, Dyslexie,Dyscalculie,Test,Psychologisch onderzoek,Beroepskeuze,Burnout,Loopbaan,Training,Coaching,Leerproblemen,Leerachterstanden,NLD,ADHD,LVG,PDD,Autisme,Faalangst,Sociaal emotionele,Pesten,Bijles, Huiswerkbegeleiding, Citotraining groep 8, Citotoets, Citoentreetoets">
+  <meta name="author" content="Sliem el Ela">
+  <title>{% block title %}{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  
-  <style>
-    [data-href] { cursor: pointer; }
-    thead {cursor: pointer;}
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+
   <!-- Javascript -->
   <script src="{{ url_for('static', filename='js/signup.js') }}"></script>
   <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
@@ -22,96 +25,75 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
-  <title>{% block title %}{% endblock %}</title>
-  </head>
-  <body>
+  <!-- Javascript libraries needed for Bootstrap -->
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
-    <!-- Navbar -->
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
     <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="{{ url_for('index') }}">IBOS</a>
+      <a class="navbar-brand roll-in-left" href="{{ url_for('index') }}" id="brand">IBOS</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarText">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('index') }}">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('about') }}">About</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('testimonials') }}">Testimonials</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
-            </li>
-            {% if current_user.is_authenticated %}
-              {% if current_user.admin %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('portal') }}">Admin Portal</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('tutor') }}">Tutor Portal</a>
-              </li>
-              {% elif current_user.tutor %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('tutor') }}">Tutor Portal</a>
-              </li>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarText">
+        <div class="navbar-nav py-2 px-5">
+          <a class="nav-item nav-link px-3" href="{{ url_for('index') }}">Home</a>
+          <a class="nav-item nav-link px-3" href="{{ url_for('about') }}">About</a>
+          <a class="nav-item nav-link px-3" href="{{ url_for('testimonials') }}">Testimonials</a>
+          <a class="nav-item nav-link px-3" href="{{ url_for('contact') }}">Contact</a>
 
-              {% elif current_user.tutor %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('tutor') }}">Tutor Portal</a>
-              </li>
-
-              {% elif current_user.parent %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('parent', userID=current_user.id) }}">Parent Portal</a>
-              </li>
-              {% else %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('student', userID = current_user.id) }}">Student Portal</a>
-              </li>
-              {% endif %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
-              </li>
-            {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('signup') }}">Sign Up</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('login') }}">Login</a>
-            </li>
-            {% endif %}
+          {% if current_user.is_authenticated %}
+          {% if current_user.admin %}
+          <a class="nav-item nav-link px-3" href="{{ url_for('portal') }}">Admin Portal</a>
+          <a class="nav-item nav-link px-3" href="{{ url_for('tutor') }}">Tutor Portal</a>
+          {% elif current_user.tutor %}
+          <a class="nav-item nav-link px-3" href="{{ url_for('tutor') }}">Tutor Portal</a>
+          {% elif current_user.tutor %}
+          <a class="nav-item nav-link px-3" href="{{ url_for('tutor') }}">Tutor Portal</a>
+          {% elif current_user.parent %}
+          <a class="nav-item nav-link px-3" href="{{ url_for('parent', userID=current_user.id) }}">Parent Portal</a>
+          {% else %}
+          <a class="nav-item nav-link px-3" href="{{ url_for('student', userID = current_user.id) }}">Student Portal</a>
+          {% endif %}
+          <a class="nav-item nav-link px-3" href="{{ url_for('logout') }}">Log Out</a>
+          {% else %}
+          <a class="nav-item nav-link px-3" href="{{ url_for('signup') }}">Sign Up</a>
+          <a class="nav-item nav-link px-3" href="{{ url_for('login') }}">Login</a>
+          {% endif %}
+       </div>
       </div>
     </nav>
+  </header>
 
 
-
-    <!-- Container of content -->
-    <div class="container p-3">
+  <!-- Container of content -->
     <!-- Flash messages -->
-      {% with messages = get_flashed_messages(with_categories=true) %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-          {% for category, message in messages %}
-              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-              <span>{{ message }}</span>
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-              </button>
-              </div>
-          {% endfor %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            <span>{{ message }}</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
       {% endif %}
-      {% endwith %}
-      
-      {% block body %}
-      {% endblock %}
-    </div>
+    {% endwith %}
 
-    <!-- Javascript libraries needed for Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    {% block body %}
+    {% endblock %}
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+        Website Design by Sliem el Ela<span class="small-invs">, University of Amsterdam (11248203)</span>
+    </div>
+  </footer>
   </body>
 </html>

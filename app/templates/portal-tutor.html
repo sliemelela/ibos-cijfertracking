@@ -5,12 +5,239 @@
 {% endblock %}
 
 {% block body %}
+<div class="container p-3">
+
+  <h1>Search</h1>
+  <input type="text" class="table-filter" data-table="order-table" placeholder="Users to filter">
+
   {% for group in groups %}
-    <h2>{{ group.name }}</h2>
-    <ul>
-        {% for studentGroup in group.studentGroups %}
-            <li><a href="{{ url_for('student', userID = studentGroup.students.id) }}">{{ studentGroup.students.firstName }} {{ studentGroup.students.lastName}}</a></li>
-        {% endfor %}
-    </ul>
+  
+  <h1>{{ group.day }}: {{ group.name }}</h1>
+  
+  <table class="table table-sm table-hover sortable order-table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">Level</th>
+        <th scope="col">Year</th>
+        <th scope="col">School</th>
+        <th scope="col">Change Group</th> 
+      </tr>
+    </thead>
+    <tbody>
+      {% for studentGroup in group.studentGroups %}
+      <tr>
+        <td data-href="{{ url_for('student', userID=studentGroup.students.id) }}">{{ studentGroup.students.firstName }}</td>
+        <td data-href="{{ url_for('student', userID=studentGroup.students.id) }}">{{ studentGroup.students.lastName }}</td>
+        <td data-href="{{ url_for('student', userID=studentGroup.students.id) }}">{{ studentGroup.students.username }}</td>
+        <td data-href="{{ url_for('student', userID=studentGroup.students.id) }}">{{ studentGroup.students.email }}</td>
+        <td data-href="{{ url_for('student', userID=studentGroup.students.id) }}">{{ studentGroup.students.level.name }}</td>
+        <td data-href="{{ url_for('student', userID=studentGroup.students.id) }}">{{ studentGroup.students.year.year }}</td>
+        <td data-href="{{ url_for('student', userID=studentGroup.students.id) }}">{{ studentGroup.students.school.name }}</td>
+        <td>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-primary btn-sm update-button" data-toggle="modal" data-target="#studentModal{{ studentGroup.students.id }}Long">
+              Change
+            </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+{% for group in groups %}
+{% for studentGroup in group.studentGroups %}
+<!-- Student Modal -->
+<div class="modal fade" id="studentModal{{ studentGroup.students.id }}Long" tabindex="-1" role="dialog" aria-labelledby="studentModal{{ studentGroup.students.id }}LongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="studentModal{{ studentGroup.students.id }}LongTitle">Update or Change User Information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{{ url_for('tutorUpdate') }}" method="post">
+        <div class="modal-body">
+
+            <div class="form-group">
+              <label for="addTestType">Change Group</label>
+              <select class="form-control" id="group" name="group">
+                {% for groupForm in groups | sort(attribute='name') %}
+                {% if groupForm.id == group.id %}
+                  <option value="{{ group.id }}" selected="selected">{{ groupForm.day }}: {{ groupForm.name }}</option>
+                {% else %}
+                  <option value="{{ groupForm.id }}">{{ groupForm.day }}: {{ groupForm.name }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+                <label for="addTestType">School</label>
+                <select class="form-control" id="school" name="school">
+                  {% for school in schools | sort(attribute='name') %}
+                  {% if studentGroup.students.schoolID == school.id %}
+                    <option value="{{ school.id }}" selected="selected">{{ school.name }}</option>
+                  {% else %}
+                    <option value="{{ school.id }}">{{ school.name }}</option>
+                  {% endif %}
+                  {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+              <label for="addTestType">School Level</label>
+              <select class="form-control" id="schoolLevel" name="schoolLevel">
+                {% for schoolLevel in schoolLevels | sort(attribute='name') %}
+                {% if studentGroup.students.levelID == schoolLevel.id %}
+                  <option value="{{ schoolLevel.id }}" selected="selected">{{ schoolLevel.name }}</option>
+                {% else %}
+                  <option value="{{ schoolLevel.id }}">{{ schoolLevel.name }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+          </div>
+          <div class="form-group">
+            <label for="addTestType">School Year</label>
+            <select class="form-control" id="schoolYear" name="schoolYear">
+              {% for schoolYear in schoolYears | sort(attribute='year') %}
+              {% if studentGroup.students.yearID == schoolYear.id %}
+                <option value="{{ schoolYear.id }}" selected="selected">{{ schoolYear.year }}</option>
+              {% else %}
+                <option value="{{ schoolYear.id }}">{{ schoolYear.year }}</option>
+              {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <input type="hidden" name="student" value="{{ studentGroup.students.id }}">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+    </form>
+    </div>
+  </div>
+</div>
+{% endfor %}
+{% endfor %}
+
   {% endfor %}
+
+  <h1>Groupless</h1>
+  
+  <table class="table table-sm table-hover sortable order-table">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">Level</th>
+        <th scope="col">Year</th>
+        <th scope="col">School</th>
+        <th scope="col">Change Group</th> 
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+      {% if student.studentGroup|length == 0 %}
+      <tr>
+        <td data-href="{{ url_for('student', userID=student.id) }}">{{ student.firstName }}</td>
+        <td data-href="{{ url_for('student', userID=student.id) }}">{{ student.lastName }}</td>
+        <td data-href="{{ url_for('student', userID=student.id) }}">{{ student.username }}</td>
+        <td data-href="{{ url_for('student', userID=student.id) }}">{{ student.email }}</td>
+        <td data-href="{{ url_for('student', userID=student.id) }}">{{ student.level.name }}</td>
+        <td data-href="{{ url_for('student', userID=student.id) }}">{{ student.year.year }}</td>
+        <td data-href="{{ url_for('student', userID=student.id) }}">{{ student.school.name }}</td>
+        <td>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-primary btn-sm update-button" data-toggle="modal" data-target="#studentModal{{ student.id }}Long">
+              Change
+            </button>
+        </td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  {% for student in students %}
+  {% if student.studentGroups|length == 0 %}
+  <!-- Student Modal -->
+<div class="modal fade" id="studentModal{{ student.id }}Long" tabindex="-1" role="dialog" aria-labelledby="studentModal{{ student.id }}LongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="studentModal{{ student.id }}LongTitle">Update or Change User Information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{{ url_for('tutorUpdate') }}" method="post">
+        <div class="modal-body">
+
+            <div class="form-group">
+              <label for="addTestType">School</label>
+              <select class="form-control" id="group" name="group">
+                {% for group in groups | sort(attribute='name') %}
+                  <option value="{{ group.id }}">{{ group.day }}: {{ group.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+                <label for="addTestType">School</label>
+                <select class="form-control" id="school" name="school">
+                  {% for school in schools | sort(attribute='name') %}
+                  {% if student.schoolID == school.id %}
+                    <option value="{{ school.id }}" selected="selected">{{ school.name }}</option>
+                  {% else %}
+                    <option value="{{ school.id }}">{{ school.name }}</option>
+                  {% endif %}
+                  {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+              <label for="addTestType">School Level</label>
+              <select class="form-control" id="schoolLevel" name="schoolLevel">
+                {% for schoolLevel in schoolLevels | sort(attribute='name') %}
+                {% if student.levelID == schoolLevel.id %}
+                  <option value="{{ schoolLevel.id }}" selected="selected">{{ schoolLevel.name }}</option>
+                {% else %}
+                  <option value="{{ schoolLevel.id }}">{{ schoolLevel.name }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+          </div>
+          <div class="form-group">
+            <label for="addTestType">School Year</label>
+            <select class="form-control" id="schoolYear" name="schoolYear">
+              {% for schoolYear in schoolYears | sort(attribute='year') %}
+              {% if student.yearID == schoolYear.id %}
+                <option value="{{ schoolYear.id }}" selected="selected">{{ schoolYear.year }}</option>
+              {% else %}
+                <option value="{{ schoolYear.id }}">{{ schoolYear.year }}</option>
+              {% endif %}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <input type="hidden" name="student" value="{{ student.id }}">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+    </form>
+    </div>
+  </div>
+</div>
+  {% endif %}
+  {% endfor %}
+
+    
+  
+  
+</div>
 {% endblock %}
