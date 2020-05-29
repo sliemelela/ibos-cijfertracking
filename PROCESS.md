@@ -153,6 +153,7 @@ Note to self: Could have definitely worked harder today, but I was a little bit 
 - Fixed some bugs along the way. 
 - Made screencast:
     - I am not that happy with my screencast. I could be better, if it is permitted, I will refilm it on a later date (tomorrow for instance).
+    - https://photos.app.goo.gl/vNkYnZBMSacQoRHZ9
 
 Plans for weekend:
 - Polish code.
