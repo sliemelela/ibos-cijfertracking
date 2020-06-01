@@ -1,20 +1,21 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Welcome
+  Tutor Portal
 {% endblock %}
 
 {% block body %}
 <div class="container p-3">
 
+  <!-- Search bar -->
   <h1>Search</h1>
   <input type="text" class="table-filter" data-table="order-table" placeholder="Users to filter">
 
+  <!-- Students in a group -->
   {% for group in groups %}
-  
   <h1>{{ group.day }}: {{ group.name }}</h1>
   
-  <table class="table table-sm table-hover sortable order-table">
+  <table class="table table-sm table-hover order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
@@ -48,21 +49,20 @@
     </tbody>
   </table>
   
-{% for group in groups %}
-{% for studentGroup in group.studentGroups %}
-<!-- Student Modal -->
-<div class="modal fade" id="studentModal{{ studentGroup.students.id }}Long" tabindex="-1" role="dialog" aria-labelledby="studentModal{{ studentGroup.students.id }}LongTitle" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="studentModal{{ studentGroup.students.id }}LongTitle">Update or Change User Information</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="{{ url_for('tutorUpdate') }}" method="post">
-        <div class="modal-body">
-
+  {% for group in groups %}
+  {% for studentGroup in group.studentGroups %}
+  <!-- Student Modal -->
+  <div class="modal fade" id="studentModal{{ studentGroup.students.id }}Long" tabindex="-1" role="dialog" aria-labelledby="studentModal{{ studentGroup.students.id }}LongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="studentModal{{ studentGroup.students.id }}LongTitle">Update or Change User Information</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{{ url_for('tutorUpdate') }}" method="post">
+          <div class="modal-body">
             <div class="form-group">
               <label for="addTestType">Change Group</label>
               <select class="form-control" id="group" name="group">
@@ -98,37 +98,36 @@
                 {% endif %}
                 {% endfor %}
               </select>
+            </div>
+            <div class="form-group">
+              <label for="addTestType">School Year</label>
+              <select class="form-control" id="schoolYear" name="schoolYear">
+                {% for schoolYear in schoolYears | sort(attribute='year') %}
+                {% if studentGroup.students.yearID == schoolYear.id %}
+                  <option value="{{ schoolYear.id }}" selected="selected">{{ schoolYear.year }}</option>
+                {% else %}
+                  <option value="{{ schoolYear.id }}">{{ schoolYear.year }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="addTestType">School Year</label>
-            <select class="form-control" id="schoolYear" name="schoolYear">
-              {% for schoolYear in schoolYears | sort(attribute='year') %}
-              {% if studentGroup.students.yearID == schoolYear.id %}
-                <option value="{{ schoolYear.id }}" selected="selected">{{ schoolYear.year }}</option>
-              {% else %}
-                <option value="{{ schoolYear.id }}">{{ schoolYear.year }}</option>
-              {% endif %}
-              {% endfor %}
-            </select>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <input type="hidden" name="student" value="{{ studentGroup.students.id }}">
+            <button type="submit" class="btn btn-primary">Save changes</button>
           </div>
-        </div>
-        <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <input type="hidden" name="student" value="{{ studentGroup.students.id }}">
-        <button type="submit" class="btn btn-primary">Save changes</button>
-        </div>
-    </form>
+      </form>
+      </div>
     </div>
   </div>
-</div>
-{% endfor %}
-{% endfor %}
-
+  {% endfor %}
+  {% endfor %}
   {% endfor %}
 
+  <!-- Students without a group -->
   <h1>Groupless</h1>
-  
-  <table class="table table-sm table-hover sortable order-table">
+  <table class="table table-sm table-hover  order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
@@ -167,18 +166,17 @@
   {% for student in students %}
   {% if student.studentGroups|length == 0 %}
   <!-- Student Modal -->
-<div class="modal fade" id="studentModal{{ student.id }}Long" tabindex="-1" role="dialog" aria-labelledby="studentModal{{ student.id }}LongTitle" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="studentModal{{ student.id }}LongTitle">Update or Change User Information</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="{{ url_for('tutorUpdate') }}" method="post">
-        <div class="modal-body">
-
+  <div class="modal fade" id="studentModal{{ student.id }}Long" tabindex="-1" role="dialog" aria-labelledby="studentModal{{ student.id }}LongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="studentModal{{ student.id }}LongTitle">Update or Change User Information</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{{ url_for('tutorUpdate') }}" method="post">
+          <div class="modal-body">
             <div class="form-group">
               <label for="addTestType">School</label>
               <select class="form-control" id="group" name="group">
@@ -210,34 +208,31 @@
                 {% endif %}
                 {% endfor %}
               </select>
+            </div>
+            <div class="form-group">
+              <label for="addTestType">School Year</label>
+              <select class="form-control" id="schoolYear" name="schoolYear">
+                {% for schoolYear in schoolYears | sort(attribute='year') %}
+                {% if student.yearID == schoolYear.id %}
+                  <option value="{{ schoolYear.id }}" selected="selected">{{ schoolYear.year }}</option>
+                {% else %}
+                  <option value="{{ schoolYear.id }}">{{ schoolYear.year }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="addTestType">School Year</label>
-            <select class="form-control" id="schoolYear" name="schoolYear">
-              {% for schoolYear in schoolYears | sort(attribute='year') %}
-              {% if student.yearID == schoolYear.id %}
-                <option value="{{ schoolYear.id }}" selected="selected">{{ schoolYear.year }}</option>
-              {% else %}
-                <option value="{{ schoolYear.id }}">{{ schoolYear.year }}</option>
-              {% endif %}
-              {% endfor %}
-            </select>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <input type="hidden" name="student" value="{{ student.id }}">
+            <button type="submit" class="btn btn-primary">Save changes</button>
           </div>
-        </div>
-        <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <input type="hidden" name="student" value="{{ student.id }}">
-        <button type="submit" class="btn btn-primary">Save changes</button>
-        </div>
-    </form>
+        </form>
+      </div>
     </div>
   </div>
-</div>
   {% endif %}
   {% endfor %}
 
-    
-  
-  
 </div>
 {% endblock %}

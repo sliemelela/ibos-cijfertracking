@@ -1,12 +1,47 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Welcome
+  {{ course.name }}
 {% endblock %}
 
 {% block body %}
 <div class="container p-3">
-  <h1>Course: {{ course.name }}</h1>
+
+    <!-- Breadcrumbs used for navigation -->
+    {% if current_user.admin %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('portal') }}">Admin Portal</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('student', userID=student.id) }}">{{ student.firstName }} {{ student.lastName }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ course.name }}</li>
+        </ol>
+      </nav>
+    {% elif current_user.tutor %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('tutor') }}">Tutor Portal</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('student', userID=student.id) }}">{{ student.firstName }} {{ student.lastName }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ course.name }}</li>
+        </ol>
+      </nav>
+    {% elif current_user.parent %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('parent', userID=current_user.id) }}">Parent Portal</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('student', userID=student.id) }}">{{ student.firstName }} {{ student.lastName }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ course.name }}</li>
+        </ol>
+    </nav>
+    {% elif current_user.student %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('student', userID=student.id) }}">{{ student.firstName }} {{ student.lastName }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ course.name }}</li>
+        </ol>
+    </nav>
+    {% endif %}
+
+    <h1>Course: {{ course.name }}</h1>
 
     <!-- Button for adding grade -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addGradeModel">
@@ -60,12 +95,13 @@
     </div>
     </div>
 
+    <!-- Grades -->
     <div class="row">
 
     <div class="col">
     <h3>Mean: {% if course.means|length > 0 %}{{ course.means[-1].mean|round(2) }} {% endif %}</h3>
-    <!-- Table of grades -->
 
+    <!-- Table of grades -->
     <table class="table table-sm table-hover">
         <thead class="thead-dark">
           <tr>
@@ -95,13 +131,14 @@
         </tbody>
       </table>
     </div>
+
     <!-- Modal for changing grades or deleting grades -->
     {% for grade in course.grades %}
     <div class="modal fade" id="gradeUpgrade{{ grade.id }}" tabindex="-1" role="dialog" aria-labelledby="gradeUpgrade{{ grade.id }}Label" aria-hidden="true">
         <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title" id="gradeUpgrade{{ grade.id }}Label">Modal title</h5>
+            <h5 class="modal-title" id="gradeUpgrade{{ grade.id }}Label">Update or Delete Grade</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -150,11 +187,13 @@
     </div>
     {% endfor %}
 
-    <div class="col">
     <!-- Graphs -->
-    <canvas id="myChart"></canvas>
+    <div class="col">
+        <canvas id="myChart"></canvas>
     </div>   
-    </div>  
+    </div> 
+
+    <!-- Script used for Graphs -->
     <script>
         const ctx = document.getElementById('myChart');
         const data = {

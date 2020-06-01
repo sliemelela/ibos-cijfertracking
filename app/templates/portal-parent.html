@@ -1,105 +1,125 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Welcome
+  Parent Portal
 {% endblock %}
 
 {% block body %}
 <div class="container p-3">
-<h1>Welcome {{ parent.firstName }} {{  parent.lastName  }}</h1>
+  <h1>Welcome {{ parent.firstName }} {{  parent.lastName  }}</h1>
 
-      <!-- Button for adding child -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addChildModal">
-        Add Child
-    </button>
+  <!-- Button for adding child -->
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addChildModal">
+      Add Child
+  </button>
   
-    <!-- Modal for adding child  -->
-    <div class="modal fade" id="addChildModal" tabindex="-1" role="dialog" aria-labelledby="addChildModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="addChildModalLabel">Add a Child</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <form action="{{ url_for('addFamily', userID = parent.id) }}" method="post">
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="addChild">Username of Child</label>
-                <input type="text" name="student" class="form-control" id="addChild" placeholder="Course name">
-                <input type="hidden" name="submitted" value="parent">
-            </div>
-             
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-        </form>
-        </div>
+  <!-- Modal for adding child  -->
+  <div class="modal fade" id="addChildModal" tabindex="-1" role="dialog" aria-labelledby="addChildModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="addChildModalLabel">Add a Child</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+      </button>
     </div>
+    <form action="{{ url_for('addFamily', userID = parent.id) }}" method="post">
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="addChild">Username of Child</label>
+        <input type="text" name="student" class="form-control" id="addChild" placeholder="Course name">
+        <input type="hidden" name="submitted" value="parent">
+      </div>
     </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+    </form>
+    </div>
+  </div>
+  </div>
 
-
-    <h2> My Children </h2>
-    <form action="{{ url_for('pending') }}" method="post">
-    <table class="table table-sm table-hover sortable order-table">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col">First Name</th>
-            <th scope="col">Last Name</th>
-            <th scope="col">Username</th>
-            <th scope="col">Accepted</th>
-            <th scope="col">Accept</th>
-            <th scope="col">Deny</th>
-            <th scope="col">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for child, familyChild in childrenInfo %}
+  <!-- Table of Children -->
+  <h2> My Children </h2>
+  <table class="table table-sm table-hover order-table">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">First Name</th>
+          <th scope="col">Last Name</th>
+          <th scope="col">Username</th>
+          <th scope="col">Accepted</th>
+          <th scope="col">Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for child, familyChild in childrenInfo %}
+        <tr>
+          {% if familyChild.pending == False %}
+          <td data-href="{{ url_for('student', userID=child.id) }}">{{ child.firstName }}</td>
+          <td data-href="{{ url_for('student', userID=child.id) }}">{{ child.lastName }}</td>
+          <td data-href="{{ url_for('student', userID=child.id) }}">{{ child.username }}</td>
+          {% else %}
+          <td>{{ child.firstName }}</td>
+          <td>{{ child.lastName }}</td>
+          <td>{{ child.username }}</td>
+          {% endif %}
+          <td>
             {% if familyChild.pending == False %}
-          <tr>
-            <td data-href="{{ url_for('student', userID=child.id) }}">{{ child.firstName }}</td>
-            <td data-href="{{ url_for('student', userID=child.id) }}">{{ child.lastName }}</td>
-            <td data-href="{{ url_for('student', userID=child.id) }}">{{ child.username }}</td>
-            <td>Yes</td>
-            <td></td>
-            <td></td>
-            <td>
-              <input type="hidden" name="parentID" value="{{ parent.id }}">
-              <input type="hidden" name="studentID" value="{{ familyChild.studentID }}">
-              <button type="submit" class="btn btn-sm btn-danger" name="decision" value="delete">Delete</button>
-            </td>
-          </tr>
+            Yes
             {% elif (familyChild.pending) and (familyChild.studentSubmit) %}
-            <tr>
-                <td>{{ child.firstName }}</td>
-                <td>{{ child.lastName }}</td>
-                <td>{{ child.username }}</td>
-                <td>Requesting Relation</td>
-                <td>
-                    <input type="hidden" name="parentID" value="{{ parent.id }}">
-                    <input type="hidden" name="studentID" value="{{ familyChild.studentID }}">
-                    <button type="submit" class="btn btn-sm btn-success" name="decision" value="accept">Accept</button>
-                </td>
-                <td>
-                    <button type="submit" class="btn btn-sm btn-secondary" name="decision" value="deny">Deny</button>
-                </td>
-            </tr>
+            Requesting Relation
             {% elif (familyChild.pending) and (familyChild.parentSubmit) %}
-            <tr>
-                <td>{{ child.firstName }}</td>
-                <td>{{ child.lastName }}</td>
-                <td>{{ child.username }}</td>
-                <td>No</td>
-                <td></td>
-                <td></td>
-            </tr>
+            No 
             {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
+          </td>
+          <td>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-outline-primary btn-sm update-button" data-toggle="modal" data-target="#familyModal{{ child.id }}Long">
+              Change
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+
+  <!-- Modal for relation changes with children -->
+  {% for child, familyChild in childrenInfo %}
+  <div class="modal fade" id="familyModal{{ child.id }}Long" tabindex="-1" role="dialog" aria-labelledby="familyModal{{ child.id }}Label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="familyModal{{ child.id }}Label">Relationship</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {% if (familyChild.pending) and (familyChild.studentSubmit) %} 
+         <p>{{ child.firstName }}  {{ child.lastName }} is requesting a relationship. Do you want to be able to view their profile? </p>
+         {% elif (familyChild.pending) and (familyChild.parentSubmit) %}
+         <p>{{ child.firstName }} {{ child.lastname }} has not accepted your parent request yet. Do you want to delete your request?</p>
+         {% else %}
+          <p>Do you want to delete {{ child.firstName }} {{ child.lastName }} from your list of children? </p>
+         {% endif %}
+        </div>
+        <form action="{{ url_for('pending') }}" method="post">
+        <div class="modal-footer">
+          <input type="hidden" name="studentID" value="{{ child.id }}">
+          <input type="hidden" name="parentID" value="{{ parent.id }}">
+          {% if (familyChild.pending) and (familyChild.studentSubmit) %} 
+          <button type="submit" class="btn btn-sm btn-secondary" name="decision" value="deny">Deny</button>
+          <button type="submit" class="btn btn-sm btn-success" name="decision" value="accept">Accept</button>
+          {% else %}
+          <button type="submit" class="btn btn-sm btn-danger" name="decision" value="delete">Delete</button>
+          {% endif %}
+        </div>
       </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
 </div>
 {% endblock %}

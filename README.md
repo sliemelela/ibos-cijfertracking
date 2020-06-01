@@ -75,4 +75,11 @@ If you are logged in (or have just signed up), you have access to a portal. The 
 
 All the other features are self-evident from the above sketches (like adding grades via modals etc.). 
 
+## Screencasts
+I have made two screencasts:
+- The first one was done on Friday, 29th of May: https://photos.app.goo.gl/vNkYnZBMSacQoRHZ9. 
+- The second one was done on Sunday, 31st of May: https://photos.app.goo.gl/H4CBw4gsnL8jZ7QT8
+
+The second version is more structured and shows all the feautures with the updated design (with all the buttons and right navigation). I have provided the first screencast as well, such that the instructor can see that there were no major changes made during the span of these two days (since this was not permitted). 
+
 

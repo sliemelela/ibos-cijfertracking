@@ -1,17 +1,19 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Welcome
+  Admin Portal
 {% endblock %}
 
 {% block body %}
 <div class="container p-3">
 
+  <!-- Search Bar -->
   <h1>Search</h1>
   <input type="text" class="table-filter" data-table="order-table" placeholder="Users to filter">
 
+  <!-- Table of Students -->
   <h1>Students</h1>
-  <table class="table table-sm table-hover sortable order-table">
+  <table class="table table-sm table-hover order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
@@ -43,48 +45,48 @@
     </tbody>
   </table>
 
-{% for user in users %}
-{% if user.student %}
-<!-- Student Modal -->
-<div class="modal fade" id="studentModal{{ user.id }}Long" tabindex="-1" role="dialog" aria-labelledby="studentModal{{ user.id }}LongTitle" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="studentModal{{ user.id }}LongTitle">Update or Change User Information</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="{{ url_for('update') }}" method="post">
-        <div class="modal-body">
+  <!-- Student Modal -->
+  {% for user in users %}
+  {% if user.student %}
+  <div class="modal fade" id="studentModal{{ user.id }}Long" tabindex="-1" role="dialog" aria-labelledby="studentModal{{ user.id }}LongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="studentModal{{ user.id }}LongTitle">Update or Change User Information</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{{ url_for('update') }}" method="post">
+          <div class="modal-body">
             <div class="form-group">
-                <label for="addCourse">Username</label>
-                <input type="hidden" value="{{ user.id }}" name="userID">
-                <input type="text" value="{{ user.username }}" name="username" class="form-control">
+              <label for="addCourse">Username</label>
+              <input type="hidden" value="{{ user.id }}" name="userID">
+              <input type="text" value="{{ user.username }}" name="username" class="form-control">
             </div>
             <div class="form-group">
-                <label for="addGrade">First Name</label>
-                <input type="text" value="{{ user.firstName }}" name="firstName" class="form-control">
+              <label for="addGrade">First Name</label>
+              <input type="text" value="{{ user.firstName }}" name="firstName" class="form-control">
             </div>
             <div class="form-group">
-                <label for="addWeight">Last Name</label>
-                <input type="text" value="{{ user.lastName }}" name="lastName" class="form-control">
+              <label for="addWeight">Last Name</label>
+              <input type="text" value="{{ user.lastName }}" name="lastName" class="form-control">
             </div> 
             <div class="form-group">
               <label for="addWeight">Last Name</label>
               <input type="email" value="{{ user.email }}" name="email" class="form-control">
             </div>     
             <div class="form-group">
-                <label for="addTestType">School</label>
-                <select class="form-control" id="school" name="school">
-                  {% for school in schools | sort(attribute='name') %}
-                  {% if user.schoolID == school.id %}
-                    <option value="{{ school.id }}" selected="selected">{{ school.name }}</option>
-                  {% else %}
-                    <option value="{{ school.id }}">{{ school.name }}</option>
-                  {% endif %}
-                  {% endfor %}
-                </select>
+              <label for="addTestType">School</label>
+              <select class="form-control" id="school" name="school">
+                {% for school in schools | sort(attribute='name') %}
+                {% if user.schoolID == school.id %}
+                  <option value="{{ school.id }}" selected="selected">{{ school.name }}</option>
+                {% else %}
+                  <option value="{{ school.id }}">{{ school.name }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
             </div>
             <div class="form-group">
               <label for="addTestType">School Level</label>
@@ -97,19 +99,19 @@
                 {% endif %}
                 {% endfor %}
               </select>
-          </div>
-          <div class="form-group">
-            <label for="addTestType">School Year</label>
-            <select class="form-control" id="schoolYear" name="schoolYear">
-              {% for schoolYear in schoolYears | sort(attribute='year') %}
-              {% if user.yearID == schoolYear.id %}
-                <option value="{{ schoolYear.id }}" selected="selected">{{ schoolYear.year }}</option>
-              {% else %}
-                <option value="{{ schoolYear.id }}">{{ schoolYear.year }}</option>
-              {% endif %}
-              {% endfor %}
-            </select>
-        </div>
+            </div>
+            <div class="form-group">
+              <label for="addTestType">School Year</label>
+              <select class="form-control" id="schoolYear" name="schoolYear">
+                {% for schoolYear in schoolYears | sort(attribute='year') %}
+                {% if user.yearID == schoolYear.id %}
+                  <option value="{{ schoolYear.id }}" selected="selected">{{ schoolYear.year }}</option>
+                {% else %}
+                  <option value="{{ schoolYear.id }}">{{ schoolYear.year }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div>
             <div class="form-group">
             <label class="checkbox-inline">
               {% if user.student %}
@@ -140,20 +142,21 @@
               {% endif %}
             </label>
             </div>
-        </div>
-        <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Save changes</button>
-        </div>
-    </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
-</div>
-{% endif %}
-{% endfor %}
+  {% endif %}
+  {% endfor %}
 
+  <!-- Table of Parents -->
   <h1>Parents</h1>
-  <table class="table table-sm table-hover sortable order-table">
+  <table class="table table-sm table-hover order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
@@ -182,8 +185,10 @@
       {% endfor %}
     </tbody>
   </table>
+
+  <!-- Table of Tutors -->
   <h1>Tutors</h1>
-  <table class="table table-sm table-hover sortable order-table">
+  <table class="table table-sm table-hover order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
@@ -214,8 +219,10 @@
       </tr>
     </tbody>
   </table>
+
+  <!-- Table of Admins -->
   <h1>Admins</h1>
-  <table class="table table-sm table-hover sortable order-table">
+  <table class="table table-sm table-hover order-table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">First Name</th>
@@ -247,20 +254,20 @@
     </tbody>
   </table>
 
-{% for user in users %}
-{% if user.tutor or user.parent or user.admin %}
-<!-- Other Modal -->
-<div class="modal fade" id="otherModal{{ user.id }}Long" tabindex="-1" role="dialog" aria-labelledby="otherModal{{ user.id }}LongTitle" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="otherModal{{ user.id }}LongTitle">Update or Change User Information</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="{{ url_for('update') }}" method="post">
-        <div class="modal-body">
+  <!-- Other Modal (for parents, tutors and admins) -->
+  {% for user in users %}
+  {% if user.tutor or user.parent or user.admin %}
+  <div class="modal fade" id="otherModal{{ user.id }}Long" tabindex="-1" role="dialog" aria-labelledby="otherModal{{ user.id }}LongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="otherModal{{ user.id }}LongTitle">Update or Change User Information</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{{ url_for('update') }}" method="post">
+          <div class="modal-body">
             <div class="form-group">
                 <label for="addCourse">Username</label>
                 <input type="hidden" value="{{ user.id }}" name="userID">
@@ -308,17 +315,17 @@
               {% endif %}
             </label>
             </div>
-        </div>
-        <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Save changes</button>
-        </div>
-    </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+      </form>
+      </div>
     </div>
   </div>
-</div>
-{% endif %}
-{% endfor %}
+  {% endif %}
+  {% endfor %}
 
 </div>
 {% endblock %}

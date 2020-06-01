@@ -1,12 +1,14 @@
 {% extends "layout.html" %}
 
 {% block title %}
-  Welcome
+  Sign Up
 {% endblock %}
 
 {% block body %}
 <div class="container p-3">
   <form action="" method="post" id="signup">
+
+    <!-- Username -->
     <div class="form-group row">
       <label for="username" class="col-sm-2 col-form-label">Username</label>
       <div class="col-sm-10">
@@ -14,6 +16,8 @@
         <div id="username_message"></div>
       </div>
     </div>
+
+    <!-- Password -->
     <div class="form-group row">
       <label for="password" class="col-sm-2 col-form-label">Password</label>
       <div class="col-sm-10">
@@ -21,6 +25,8 @@
         <div id="password_message"></div>
       </div>
     </div>
+
+    <!-- Repeat Password -->
     <div class="form-group row">
       <label for="password_repeat" class="col-sm-2 col-form-label">Password Repeat</label>
       <div class="col-sm-10">
@@ -28,6 +34,8 @@
         <div id="password_repeat_message"></div>
       </div>
     </div>
+
+    <!-- First Name -->
     <div class="form-group row">
       <label for="first_name" class="col-sm-2 col-form-label">First Name</label>
       <div class="col-sm-10">
@@ -35,6 +43,8 @@
         <div id="first_name_message"></div>
       </div>
     </div>
+
+    <!-- Last Name -->
     <div class="form-group row">
       <label for="last_name" class="col-sm-2 col-form-label">Last Name</label>
       <div class="col-sm-10">
@@ -42,6 +52,8 @@
         <div id="last_name_message"></div>
       </div>
     </div>
+
+    <!-- Email -->
     <div class="form-group row">
       <label for="email" class="col-sm-2 col-form-label">Email</label>
       <div class="col-sm-10">
@@ -50,6 +62,7 @@
       </div>
     </div>
 
+    <!-- Role: student, parent-->
     <div class="form-group row">
       <label for="role" class="col-sm-2 col-form-label">Role</label>
       <div class="col-sm-10">
@@ -62,7 +75,10 @@
       </div> 
     </div>
 
+    <!-- Options for student role -->
     <div id="studentRole">
+
+    <!-- School -->
     <div class="form-group row">
       <label for="school" class="col-sm-2 col-form-label">School</label>
       <div class="col-sm-10">
@@ -77,6 +93,7 @@
       </div>
     </div>
 
+    <!-- School Level -->
     <div class="form-group row ">
       <label for="schoolLevel" class="col-sm-2 col-form-label">School Level</label>
       <div class="col-sm-10">
@@ -90,6 +107,7 @@
       </div>
     </div>
 
+    <!-- School Year -->
     <div class="form-group row">
       <label for="schoolYear" class="col-sm-2 col-form-label">School Year</label>
       <div class="col-sm-10">

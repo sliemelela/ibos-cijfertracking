@@ -1,3 +1,9 @@
+# application.py
+#
+# Name: Sliem el Ela
+# Student number: 11248203
+# Course: Web App Studio (Lente)
+
 import hashlib
 import os
 import re
@@ -40,13 +46,8 @@ admin = Admin(app, name='IBOS', template_mode='bootstrap3')
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(School, db.session))
 admin.add_view(ModelView(SchoolLevel, db.session))
-admin.add_view(ModelView(Family, db.session))
 admin.add_view(ModelView(GroupTime, db.session))
-admin.add_view(ModelView(StudentGroup, db.session))
-admin.add_view(ModelView(StudentAbsent, db.session))
-admin.add_view(ModelView(Course, db.session))
 admin.add_view(ModelView(TestType, db.session))
-admin.add_view(ModelView(Grade, db.session))
 
 # Configuring flask Login
 login_manager = LoginManager()
@@ -76,19 +77,6 @@ def pass_validation(password):
 @app.route("/")
 def index():
     return render_template("index.html")
-
-@app.route("/about")
-def about():
-    return render_template("about.html")
-
-@app.route("/testimonials")
-def testimonials():
-    return render_template("testimonials.html")
-
-@app.route("/contact")
-def contact():
-    return render_template("contact.html")
-
 
 # User registration
 @app.route("/signup", methods=["GET", "POST"])
@@ -135,8 +123,14 @@ def signup():
 
         # Logging in user
         login_user(user)
-
-        return "Yello"
+        if user.admin:
+            return redirect(url_for("portal"))
+        elif user.tutor:
+            return redirect(url_for("tutor"))
+        elif user.parent:
+            return redirect(url_for("parent", userID=current_user.id))
+        else:
+            return redirect(url_for("student", userID=current_user.id))
 
     return render_template("signup.html", schools = schools, schoolLevels = schoolLevels, schoolYears = schoolYears)
 
@@ -222,10 +216,12 @@ def login():
             login_user(user)
             if user.admin:
                 return redirect(url_for("portal"))
-            elif user.parent or user.tutor:
-                return redirect(url_for("all"))
+            elif user.tutor:
+                return redirect(url_for("tutor"))
+            elif user.parent:
+                return redirect(url_for("parent", userID=current_user.id))
             else:
-                return redirect(url_for("student"))
+                return redirect(url_for("student", userID=current_user.id))
 
 
     return render_template("login.html")
@@ -236,9 +232,14 @@ def logout():
     logout_user()
     return redirect(url_for("index"))
 
+# Admin portal routes
 @app.route("/portal")
 @login_required
 def portal():
+
+    # Checking is current user is permitted to visit page
+    if current_user.admin == False:
+        return render_template("404.html")
 
     # Retrieve all users
     users = User.query.all()
@@ -298,10 +299,14 @@ def update():
 
     return redirect(url_for("portal"))
 
-
+# Tutor routes
 @app.route("/portal/tutor")
 @login_required
 def tutor():
+    
+    # Checking is current user is permitted to visit page
+    if current_user.admin == False and current_user.tutor == False:
+        return render_template("404.html")
 
     # Retrieving list of schools, levels and years
     schools = School.query.all()
@@ -341,14 +346,27 @@ def tutorUpdate():
     db.session.commit()
 
     return redirect(url_for('tutor'))
+    
+# Parent and student routes
 @app.route("/portal/parent/<int:userID>")
 def parent(userID):
 
     # Retrieve information about parent
-    parent = User.query.filter_by(id=userID).first()
+    parent = User.query.get(userID)
+
+    # Check if the user is actually a parent 
+    if parent is None or parent.parent == False:
+        return render_template("404.html")
+
+    # Checking is current user is permitted to visit page
+    if current_user.admin == False and current_user.tutor == False:
+        if current_user.id != userID:
+            return render_template("404.html")
+
+    # Retrieve other relevant information about parent
     familyChildren = Family.query.filter_by(parentID=userID).all() 
     children = [User.query.get(familyChild.studentID) for familyChild in familyChildren]
-    childrenInfo = zip(children, familyChildren)
+    childrenInfo = list(zip(children, familyChildren))
 
     # Remember that this route was visited
     session['url'] = url_for('parent', userID=userID)
@@ -363,11 +381,26 @@ def student(userID):
     testTypes = TestType.query.all()
 
     # Retrieve information about student 
-    student = User.query.filter_by(id=userID).first()
+    student = User.query.get(userID)
+
+    # Check if the user is actually a student
+    if student is None or student.student == False:
+        return render_template("404.html")
+
+    # Retrieve other relevant information about student 
     familyParents = Family.query.filter_by(studentID=userID).all()
     parents = [User.query.get(familyParent.parentID) for familyParent in familyParents]
-    parentsInfo = zip(parents, familyParents)
+    parentsInfo = list(zip(parents, familyParents))
     typeMeans = TypeMean.query.filter_by(studentID=userID).all() 
+
+    # Get list of id's of parents that are eligible to visit student site 
+    eligibleParents = [familyParent.parentID for familyParent in familyParents if familyParent.pending == False]
+
+    # Checking is current user is permitted to visit page
+    if current_user.admin == False and current_user.tutor == False:
+        if current_user.id != userID:
+            if current_user.id not in eligibleParents:
+                return render_template("404.html")
     
     # Remember that this route was visited
     session['url'] = url_for('student', userID=userID)
@@ -451,7 +484,6 @@ def pending():
         
     return redirect(session['url'])
 
-
 @app.route("/portal/student/<int:userID>/addcourse", methods=["POST"])
 @login_required
 def addCourse(userID):
@@ -471,9 +503,13 @@ def addCourse(userID):
 def course(userID, courseID):
 
     # Retrieve information about student and course
-    student = User.query.filter_by(id=userID).first()
-    course = Course.query.filter_by(id=courseID).first()
+    student = User.query.get(userID)
+    course = Course.query.get(courseID)
     means = CourseMean.query.filter_by(courseID=courseID).all()
+
+    # Check if course exists or if it is actually a course of the student 
+    if course is None or course.studentID != userID:
+        return render_template("404.html")
 
     # Retrieve all test types
     testTypes = TestType.query.all()
@@ -571,6 +607,10 @@ def updateGrade(userID):
     weightNew = float(request.form.get("weight"))
     testTypeIDNew = int(request.form.get("testType"))
     dateTestNew = request.form.get("dateTest")
+
+    # Checking if date of test was filled in 
+    if len(dateTestNew) == 0:
+        dateTestNew = None
 
     # Retrieving all courses from user
     courses = Course.query.filter_by(studentID=userID).all()

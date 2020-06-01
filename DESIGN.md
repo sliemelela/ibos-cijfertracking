@@ -50,6 +50,11 @@ For the demonstration of this product, it may be handy to compose a file that au
 Lastly, as we have said before, if time would permit it, we would like to also embed a google map in the contact page. For this, the Google Maps API would be needed. 
 
 
+## Updated database design 
+The updated design (UML diagram) of the database can be found below. In this diagram FK is shorthand for "Foreign Key" and PK is shorthand for "Primary Key".
+![UML-Diagram database design](doc/img/uml-diagram-2.png)
+
+
 
 
 

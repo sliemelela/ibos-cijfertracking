@@ -1,3 +1,9 @@
+# models.py
+#
+# Name: Sliem el Ela
+# Student number: 11248203
+# Course: Web App Studio (Lente)
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 db = SQLAlchemy()
@@ -41,9 +47,6 @@ class User(UserMixin, db.Model):
     year = db.relationship('SchoolYear',lazy=True)
     courses = db.relationship('Course', lazy=True)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
-
 class Family(db.Model):
     __tablename__ = 'families'
     id = db.Column(db.Integer, primary_key=True)
@@ -60,25 +63,12 @@ class GroupTime(db.Model):
     name = db.Column(db.String, nullable=False)
     studentGroups = db.relationship('StudentGroup', backref="group", lazy=True)
 
-    def __repr__(self):
-        return f'<Group {self.name} at day {self.day}>'
-
 class StudentGroup(db.Model):
     __tablename__ = 'studentGroups'
     id = db.Column(db.Integer, primary_key=True)
     groupID = db.Column(db.Integer, db.ForeignKey("groupTimes.id"), nullable=False)
     studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     students = db.relationship('User', backref="studentGroup", lazy=True)
-
-# Class that keeps track of student absences 
-class StudentAbsent(db.Model):
-    __tablename__ = 'studentAbsences'
-    id = db.Column(db.Integer, primary_key=True)
-    studentID = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    date = db.Column(db.Date, nullable=False)
-    absent = db.Column(db.Boolean, nullable=False)
-    permitted = db.Column(db.Boolean, nullable=False)
-    late = db.Column(db.Boolean, nullable=False)
 
 # Classes that keep track of performance of students 
 class Course(db.Model):
@@ -88,9 +78,6 @@ class Course(db.Model):
     name = db.Column(db.String, nullable=False)
     grades = db.relationship('Grade', lazy=True)
     means = db.relationship('CourseMean', lazy=True)
-
-    def __repr__(self):
-        return '<Course %r>' % self.name
 
 class CourseMean(db.Model):
     __tablename__  = 'courseMeans'
