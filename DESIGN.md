@@ -25,14 +25,53 @@ For the general routes, we have used the routes
 | `/logout`                  	| Route for logging out user                           	|                                      	|
 
 where we focus on the ability for the user to visit the website (landing page), sign up and loggin in/out.
-New users automatically go to the landing page (`\`)
-<div style="align: center;">
-    <img src="doc/img/landing-page.png" alt="A screenshot of the landing page" width="650">
-</div>
-after which users can sign up for the first time using the route `\signup`:
-<div style="align: center;">
-    <img src="doc/img/signup-page.png" alt="A screenshot of the signup page" width="650">
-</div>
+New users automatically go to the landing page (`\`) 
+<img src="doc/img/landing-page.png" alt="A screenshot of the landing page" width="650">
+
+after which users can sign up for the first time using the route `\signup`: 
+
+<img src="doc/img/signup-page.png" alt="A screenshot of the signup page" width="650">
+
+In the signup page, we check whether the filled in information is valid (e.g. unique username, safe enough password etc.) using AJAX requests using the routes `usernamecheck` -- `emailcheck` in the table. After everything is valid, the submit button is being enabled again (since it was disabled from the start). 
+The login page (`\login`) looks similar and is very self-evident. If users are logged in, the "logout" will appear in the navigation bar, which a user can click to logout (`\logout`).
+
+### Portal routes
+For the portal routes we have used the following routes
+
+| Route                                                	| Description                                                      	| Note                                   	|
+|------------------------------------------------------	|------------------------------------------------------------------	|----------------------------------------	|
+| `/portal`                                            	| Admin page                                                       	| List of users / change permissions     	|
+| `/portal/update`                                     	| Route for updating information from users from admin             	|                                        	|
+| `/portal/tutor`                                      	| Tutor Page                                                       	| List of students / change limited data 	|
+| `/portal/tutor/update`                               	| Route for updating information from students from tutor password 	|                                        	|
+| `/portal/parent`                                     	| Parent Page                                                      	| List of children that parent can visit 	|
+| `/portal/student/<int:userID>`                       	| Student Page                                                     	| Add courses / parents. View graphs     	|
+| `/portal/<int:userID>/addfamily`                     	| Route that adds relations between students and parents           	| Think of a Facebook friendship request 	|
+| `/portal/pending`                                    	| Route for accepting / denying / deleting relation (requests)     	|                                        	|
+| `/portal/student/<int:userID>/addcourse`             	| Route for adding a course                                        	|                                        	|
+| `/portal/student/<int:userID>/course/<int:courseID>` 	| Course Page                                                      	|                                        	|
+| `/portal/student/<int:userID>/addgrade`              	| Route for adding grade                                           	| This route calculates a new mean       	|
+| `/portal/student/<int:userID>/updategrade`           	| Route for updating/deleting grade                                	| This route recalculates all the means  	|
+
+
+#### Admin Users
+If you are logged in, and you are an admin user, you are met with the following page (`/portal`)
+
+<img src="doc/img/admin-page.png" alt="A screenshot of the admin page" width="650">
+
+As you can see you have four separate tables with a list of all users. If you click on the row containing the information of a user (student/parent), then you will be redirected to their profile. Using the search functionality on the top left, you can search for specific users using every keyword (searchtable.js):
+
+<img src="doc/img/admin-page-search.png" alt="A screenshot of the admin search functionality" width="650">
+
+You can also change user information by clicking on "change" for a row of the user (most right column):
+
+<img src="doc/img/admin-page-change.png" alt="A screenshot of the functionality of changing user information" width="650">
+
+
+
+
+
+
 
 # Design of the Student Tracker application
 
