@@ -4,8 +4,8 @@ A lot of tutor companies (including the one I am working in) want to keep track 
 This application provides a way for students / parents and the tutors to see what those results are. 
 The main feauture of this application is for the students to add their grades (with relevant metadata) to produce graphs about the performance of the students. 
 Below you can see two pictures of what the application may look like in action
-![A screenshot of the portal of a student](doc/img/student-page.png =300px)
-![A screenshot of the portal of a student a course](doc/img/course-page.png =300px)
+<img src="doc/img/student-page.png" alt="A screenshot of the portal of a student" width="300">
+<img src="doc/img/course-page.png" alt="A screenshot of the portal of a course of a student" width="300">
 
 ## Problem statement
 
