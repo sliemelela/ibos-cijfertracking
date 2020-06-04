@@ -65,7 +65,16 @@ As you can see you have four separate tables with a list of all users. If you cl
 
 You can also change user information by clicking on "change" for a row of the user (most right column):
 
-<img src="doc/img/admin-page-change.png" alt="A screenshot of the functionality of changing user information" width="650">
+<img src="doc/img/admin-page-change.png" alt="A screenshot of the functionality of changing user information" width="300">
+
+### Tutor Portal
+If you are logged in, and you are an tutor user or you are an admin that visits the tutor page, you are met with the following page (`/portal`)
+
+<img src="doc/img/tutor-page.png" alt="A screenshot of the tutor page" width="650">
+
+As you can see there are multiple lists of students, each belonging to a group. You can search for students using the top left search bar in a similar fashion as with the search functionality in the admin page. And also in a similar fashion, you can change the information, but this is limited: 
+
+<img src="doc/img/tutor-page-change.png" alt="A screenshot of the functionality of changing student information on tutor page" width="650">
 
 
 
