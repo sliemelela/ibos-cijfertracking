@@ -1,4 +1,40 @@
 # Design of the Student Tracker application
+In this document we will first discuss the different routes that we use in the application while we give an overview of the functionality, after which we introduce the POSTGRESQL database design to support these routes. For the full context we first reccomend reading README.md. 
+
+This application supports four kinds of users:
+- Admins: Has the ability to access all profiles of all students / parents. Can also change properties of all the other users.
+- Tutors: Has the ability to access all profiles of students. Can change limited amount of properties of students.
+- Parents: Has the ability to access student profiles that accepted their relationship request.
+- Student: Has the ability to add courses, add grades to courses and add parents to their profile. 
+
+## Routes 
+This application is subdivided into two parts: the general routes and the portal routes. 
+In the general routes we provide a way for new users to interact with the website and give them the possibility to sign in / login / logout, while the portal routes are used to support the functionality that we described above of the four different users in the application.
+
+### General routes
+For the general routes, we have used the routes
+| Route                      	| Description                                          	| Note                                 	|
+|----------------------------	|------------------------------------------------------	|--------------------------------------	|
+| `/`                        	| Landing page / Home page                             	|                                      	|
+| `/signup`                  	| Page for signing up                                  	|                                      	|
+| `usernamecheck`            	| Route for checking username                          	| Output is JSON used for AJAX request 	|
+| `/passwordcheck`           	| Route for checking password                          	| Output is JSON used for AJAX request 	|
+| `/passwordcrossvalidation` 	| Route for checking if password and password coincide 	| Output is JSON used for AJAX request 	|
+| `/emailcheck`              	| Route for checking if email is unique                	| Output is JSON used for AJAX request 	|
+| `/login`                   	| Page for logging in user                             	|                                      	|
+| `/logout`                  	| Route for logging out user                           	|                                      	|
+
+where we focus on the ability for the user to visit the website (landing page), sign up and loggin in/out.
+New users automatically go to the landing page (`\`)
+<div style="align: center">
+    <img src="doc/img/landing-page.png" alt="A screenshot of the landing page" width="650">
+</div>
+after which users can sign up for the first time using the route `\signup`:
+<div style="align: center">
+    <img src="doc/img/signup-page.png" alt="A screenshot of the signup page" width="650">
+</div>
+
+# Design of the Student Tracker application
 
 To understand to context in which this document was written, we first the reader to README.md.
 

@@ -26,7 +26,7 @@ What makes this application powerful is that you can update the your grades and 
 ### Solutions by existing apps
 
 - Microsoft Excel: An argument could be made to keep track of the results using Microsoft Excel, but that entails a non-user friendly environment for both students/parents and new tutors that are not familiar with Microsoft Excel. 
-- Magister: At virtually any school in The Netherlands, the application "Magister" is used to keep track of the performance of the students. The problem with Magister is that you can not properly see that changes in performance of the students, because the only thing that "Magister" keeps track of are the actual grades. There are no relevant summaries included that may guide or help the tutors or teachers. Magister is good for storing grades, but not handy for any meaningful analysis. Besides this, it would not be practical (or even ethical) to ask for all the login information of all the students such that the tutors can view  
+- Magister: At virtually any school in The Netherlands, the application "Magister" is used to keep track of the performance of the students. The problem with Magister is that you can not properly see the changes in performance of the students, because the only thing that "Magister" keeps track of are the actual grades. There are no relevant summaries included that may guide or help the tutors or teachers. Magister is good for storing grades, but not handy for any meaningful analysis. Besides this, it would not be practical (or even ethical) to ask for all the login information of all the students such that the tutors can view  
 
 ## Languages and utilities
 This application is going to be run on a flask server. For this reason, we use:
@@ -36,7 +36,12 @@ This application is going to be run on a flask server. For this reason, we use:
     - flask-admin
 
 For storing data we use a POSTGRESQL Database hosted by Heroku, which we manage via migrations in a python file. 
-We will also use Javascript to handle requests that can be solved on the client-side and also for the implementation of AJAX (for the sign up page). 
+We will also use Javascript to handle requests that can be solved on the client-side and also for the implementation of AJAX (for the sign up page).
+We will load the following libraries in our HTML pages:
+- Bootstrap
+- Popper.js (needed for Bootstrap)
+- JQuery (needed for Bootstrap)
+- Chart.js (with moments library)
 
 ## Screencasts
 I have made two screencasts:
@@ -45,4 +50,13 @@ I have made two screencasts:
 
 The second version is more structured and shows all the feautures with the updated design (with all the buttons and right navigation). I have provided the first screencast as well, such that the instructor can see that there were no major changes made during the span of these two days (since this was not permitted). 
 
+## Acknowledgements
+- Design inspiration from: https://www.youtube.com/watch?v=Wm6CUkswsNw
+- Note: Showcase banner on landing page by Helloquence on Unsplash
+- The Javascript file that makes searching through tables possible (searchtable.js): 
+    - Tutorial at https://dev.to/michelc/search-and-filter-a-table-with-javascript-28mi
+    - Original author: https://codepen.io/priyankamalviya
 
+Note: Showcase banner by Helloquence on Unsplash
+
+- Sliem el Ela, All Rights Reserved. 2020.
