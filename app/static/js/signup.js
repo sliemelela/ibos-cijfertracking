@@ -11,15 +11,22 @@ document.addEventListener('DOMContentLoaded', () => {
         status[x] = false;
         document.querySelector('#submit').disabled = true;
     }
+    
     // Function that updates status and sets it to true and enables button when necessary
     function true_status(x){
         status[x] = true;
+
+        // Checking if all the fields are properly filled in 
         if (status["username"] == true && status["password"] == true && status["password_repeat"] == true && status["firstname"] == true && status["lastname"] == true && status["email"] == true){
+            
+            // For students, checking the extra fields
             if(document.querySelector('#student').checked){
                 if (status["school"] == true && status["schoollevel"] == true && status["schoolyear"] == true){
                 document.querySelector('#submit').disabled = false;
                 }
             }
+
+            // For parents there is no extra check
             else{
                 document.querySelector('#submit').disabled = false;
             }
@@ -85,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Send request
         request.send(data);
         return false;
-     };
+    };
 
     document.querySelector('#password').onblur = () => {
 

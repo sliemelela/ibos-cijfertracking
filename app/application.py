@@ -76,11 +76,13 @@ def pass_validation(password):
 # Home page
 @app.route("/")
 def index():
+    """ Landing Page """
     return render_template("index.html")
 
 # User registration
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
+    """ Signing up users """
 
     # Retrieving list of schools, levels and years
     schools = School.query.all()
@@ -101,15 +103,12 @@ def signup():
         schoolYear = request.form.get("schoolYear")
 
         # Booleans for role of user
-        student = False
-        parent = False 
+        student = parent = False
         if role == "student":
             student = True
         elif role == "parent":
             parent = True 
-            school = None
-            schoolLevel = None
-            schoolYear = None
+            school = schoolLevel = schoolYear = None
 
         # Hashing password
         salt = os.urandom(32)
@@ -137,6 +136,7 @@ def signup():
 # Routes that are used for signup validation
 @app.route("/usernamecheck", methods=["POST"])
 def usernamecheck():
+    """ Checking if username is already taken or has more then three characters """
 
     # Retrieving username
     username = request.form.get("username")
@@ -154,10 +154,10 @@ def usernamecheck():
 
 @app.route("/passwordcheck", methods=["POST"])
 def passwordcheck():
+    """ Checking if password satisfies requirements """
 
     # Retrieving password
     password = request.form.get("password")
-    password_repeat = request.form.get("password_repeat")
 
     # Checking if password satisfies the requirements
     if pass_validation(password)[0] == False:
@@ -167,6 +167,7 @@ def passwordcheck():
 
 @app.route("/passwordcrossvalidation", methods=["POST"])
 def passwordcrossvalidation():
+    """ Checking if password and repeated password are the same """
 
     # Retrieving password information
     password = request.form.get("password")
@@ -179,9 +180,12 @@ def passwordcrossvalidation():
 
 @app.route("/emailcheck", methods=["POST"])
 def emailcheck():
+    """ Checking if email is unique """
 
+    # Retrieving email information 
     email = request.form.get("email")
     user = User.query.filter_by(email=email).first()
+
     if user is not None:
         email_available = False
         return jsonify({"email_available": False, "message": "This e-mail is already in use."})
@@ -190,6 +194,7 @@ def emailcheck():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    """ Page for logging in a user """
 
     if request.method == "POST":
 
@@ -223,12 +228,13 @@ def login():
             else:
                 return redirect(url_for("student", userID=current_user.id))
 
-
     return render_template("login.html")
 
 @app.route("/logout")
 @login_required
 def logout():
+    """ Logging out the user """
+
     logout_user()
     return redirect(url_for("index"))
 
@@ -236,8 +242,12 @@ def logout():
 @app.route("/portal")
 @login_required
 def portal():
+    """ 
+    Portal for admin users. 
+    This route gives an overview of all accounts on which you can also change properties/permissions of certain users.
+    """
 
-    # Checking is current user is permitted to visit page
+    # Checking if current user is permitted to visit page
     if current_user.admin == False:
         return render_template("404.html")
 
@@ -254,6 +264,7 @@ def portal():
 @app.route("/portal/update", methods=["POST"])
 @login_required
 def update():
+    """ Update user information """
 
     # Retrieve user information
     userID = request.form.get("userID")
@@ -268,11 +279,8 @@ def update():
     yearID = request.form.get("schoolYear")
     roles = request.form.getlist("role")
 
-    # Check the roles of user 
-    admin = False
-    tutor = False
-    parent = False
-    student = False
+    # Check the roles of user
+    admin = tutor = parent = student = False 
     if "admin" in roles:
         admin = True
     if "tutor" in roles:
@@ -303,6 +311,10 @@ def update():
 @app.route("/portal/tutor")
 @login_required
 def tutor():
+    """ 
+    Portal for tutor users. 
+    This route gives an overview of all students on which you can also change certain properties of the student accounts.
+    """
     
     # Checking is current user is permitted to visit page
     if current_user.admin == False and current_user.tutor == False:
@@ -317,10 +329,12 @@ def tutor():
     students = User.query.filter_by(student=True).all()
     groups = GroupTime.query.all()
 
-    return render_template("portal-tutor.html", students=students, groups=groups, schools=schools, schoolLevels=schoolLevels, schoolYears=schoolYears)
+    return render_template("portal-tutor.html", students=students, groups=groups, schools=schools,\
+        schoolLevels=schoolLevels, schoolYears=schoolYears)
 
 @app.route("/portal/tutor/update", methods=["POST"])
 def tutorUpdate():
+    """ Updating the information of a student """
 
     # Retrieving user input
     studentID = request.form.get("student")
@@ -350,6 +364,11 @@ def tutorUpdate():
 # Parent and student routes
 @app.route("/portal/parent/<int:userID>")
 def parent(userID):
+    """ 
+    Portal for parent users. 
+    This route gives an overview of all accounts that are children of the parent.
+    You can also add new accounts via a relationship request.
+    """
 
     # Retrieve information about parent
     parent = User.query.get(userID)
@@ -366,6 +385,8 @@ def parent(userID):
     # Retrieve other relevant information about parent
     familyChildren = Family.query.filter_by(parentID=userID).all() 
     children = [User.query.get(familyChild.studentID) for familyChild in familyChildren]
+
+    # List of tuples of family objects and user objects
     childrenInfo = list(zip(children, familyChildren))
 
     # Remember that this route was visited
@@ -376,6 +397,10 @@ def parent(userID):
 @app.route("/portal/student/<int:userID>")
 @login_required
 def student(userID):
+    """
+    Portal for student users. 
+    This route gives an overview of all student courses and also provides relevant graphs.
+    """
 
     # Retrieve all test types
     testTypes = TestType.query.all()
@@ -390,7 +415,11 @@ def student(userID):
     # Retrieve other relevant information about student 
     familyParents = Family.query.filter_by(studentID=userID).all()
     parents = [User.query.get(familyParent.parentID) for familyParent in familyParents]
+
+    # List of tuples of family objects and user objects
     parentsInfo = list(zip(parents, familyParents))
+
+    # Retrieving the means of every test type
     typeMeans = TypeMean.query.filter_by(studentID=userID).all() 
 
     # Get list of id's of parents that are eligible to visit student site 
@@ -405,11 +434,13 @@ def student(userID):
     # Remember that this route was visited
     session['url'] = url_for('student', userID=userID)
     
-    return render_template("portal-student.html", student=student, parents=parents, parentsInfo=parentsInfo, testTypes=testTypes, typeMeans=typeMeans)
+    return render_template("portal-student.html", student=student, parents=parents, parentsInfo=parentsInfo, \
+        testTypes=testTypes, typeMeans=typeMeans)
 
 @app.route("/portal/<int:userID>/addfamily", methods=["POST"])
 @login_required
 def addFamily(userID):
+    """ Relationship request between children and parents """
 
     # Check via what page request was made
     submitted = request.form.get("submitted")
@@ -465,6 +496,10 @@ def addFamily(userID):
 @app.route("/portal/pending", methods=["POST"])
 @login_required
 def pending():
+    """ 
+    Accepting, Denying a relationship request. 
+    Also a route with which you can delete already made requests.
+    """
 
     # Retrieving user input
     decision = request.form.get("decision")
@@ -487,12 +522,13 @@ def pending():
 @app.route("/portal/student/<int:userID>/addcourse", methods=["POST"])
 @login_required
 def addCourse(userID):
+    """ Adding courses to a page of a student """
 
     # Retrieve user input 
     courseName = request.form.get("course")
 
     # Initiating a new course and adding it to the database 
-    course = Course(studentID=int(userID), name=courseName)
+    course = Course(studentID=userID, name=courseName)
     db.session.add(course)
     db.session.commit()
 
@@ -501,6 +537,7 @@ def addCourse(userID):
 @app.route("/portal/student/<int:userID>/course/<int:courseID>")
 @login_required
 def course(userID, courseID):
+    """ Page with grades of the course and also with a graph of how the mean changed over time """
 
     # Retrieve information about student and course
     student = User.query.get(userID)
@@ -514,12 +551,12 @@ def course(userID, courseID):
     # Retrieve all test types
     testTypes = TestType.query.all()
 
-    # Retrieve information about course 
     return render_template("course.html", student=student, course=course, testTypes=testTypes, means=means)
 
 @app.route("/portal/student/<int:userID>/addgrade", methods=["POST"])
 def addGrade(userID):
-    
+    """ Route to add grades and calculate the new means """
+
     # Retrieving date
     today = datetime.now()
 
@@ -591,6 +628,10 @@ def addGrade(userID):
 
 @app.route("/portal/student/<int:userID>/updategrade", methods=["POST"])
 def updateGrade(userID):
+    """ 
+    Route to update already existing grades or even delete them.
+    Also the all the means are recalculated. 
+    """
 
     # Retrieving date
     today = datetime.now()
@@ -602,7 +643,7 @@ def updateGrade(userID):
     courseID = request.form.get("course")
     currentCourse = Course.query.get(courseID)
 
-    # Update information
+    # Store updated information in variables
     gradeNew = float(request.form.get("grade"))
     weightNew = float(request.form.get("weight"))
     testTypeIDNew = int(request.form.get("testType"))
@@ -706,6 +747,8 @@ def updateGrade(userID):
         grade.dateUpdate = today
         grade.dateTest = dateTestNew
         flash("Successfully updated grade", "success")
+
+    # Comitting updated grade    
     db.session.commit()
 
     return redirect(url_for("course", userID=userID, courseID=courseID))

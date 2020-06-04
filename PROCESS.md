@@ -178,3 +178,10 @@ I was the whole day busy unfortunately, so I am now forced to stay up the whole 
 During the whole project I forgot to secure all the pages such that random logged in people cannot visit each other's pages. I added that simple functionality today as well. 
 While writing this, it is actually monday, but I count it as sunday since I am still working from sunday night. A
 
+
+- Adding a parent / child via the table did not work properly
+- Updating a grade did not work if you left "Date Test" empty. 
+- Clean up all the code
+- Fix little bugs
+- Make a better screencast.
+- Make a updated diagram of the database design. 

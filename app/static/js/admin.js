@@ -1,3 +1,4 @@
+// Making table rows clickable 
 document.addEventListener("DOMContentLoaded", () => {
 
     const rows = document.querySelectorAll("td[data-href]");
@@ -7,6 +8,5 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = row.dataset.href;
         });
     });
-
 
 });

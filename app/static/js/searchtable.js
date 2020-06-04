@@ -20,9 +20,7 @@ var TableFilter = (function() {
 
 		function filter(row) {
 			var text = row.textContent.toLowerCase();
-       //console.log(text);
-      var val = input.value.toLowerCase();
-      //console.log(val);
+      		var val = input.value.toLowerCase();
 			row.style.display = text.indexOf(val) === -1 ? 'none' : 'table-row';
 		}
 
