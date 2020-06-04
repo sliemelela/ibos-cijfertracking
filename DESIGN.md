@@ -26,11 +26,11 @@ For the general routes, we have used the routes
 
 where we focus on the ability for the user to visit the website (landing page), sign up and loggin in/out.
 New users automatically go to the landing page (`\`)
-<div style="align: center">
+<div style="align: center;">
     <img src="doc/img/landing-page.png" alt="A screenshot of the landing page" width="650">
 </div>
 after which users can sign up for the first time using the route `\signup`:
-<div style="align: center">
+<div style="align: center;">
     <img src="doc/img/signup-page.png" alt="A screenshot of the signup page" width="650">
 </div>
 
