@@ -118,25 +118,44 @@ Also you can update / delte existing grades using the "change" button in every r
 <img src="doc/img/grade-modal-update.png" alt="A screenshot of updating/deletinh a grade via a modal" width="300">
 
 
-
-
-
 ## Database Design 
-The preliminary design (UML diagram) of the database can be found below. In this diagram FK is shorthand for "Foreign Key" and PK is shorthand for "Primary Key".
-![UML-Diagram database design](doc/img/uml-diagram-1.png)
+The database design (UML diagram) of the database can be found below. In this diagram FK is shorthand for "Foreign Key" and PK is shorthand for "Primary Key".
+![UML-Diagram database design](doc/img/uml-diagram.png)
 
-## List of APIs
-For the minimum viable product, in principle, there is no need to use any external data sources or APIs. However, there exists a Magister API that may be compatible in such a way that all grades could be automatically entered (provided that the student has authenticated the transmission between Magister and this application). 
-The problem is that the Magister API documentation does not provide sufficient information regarding the implementation with Python as it seems to lean more to an implementation with PHP, which we will not use in this application. 
+In models.py we subdivide all these tables into three different categories:
+- Schools
+    - School (*)
+    - SchoolLevel (*)
+    - SchoolYear (*)
+- User relations
+    - User
+    - Family
+    - GroupTime (*)
+    - StudentGroup
+- Performane
+    - Course
+    - CourseMean
+    - TypeMean
+    - Grade
 
-For the demonstration of this product, it may be handy to compose a file that automatically imports dummy students / parents and grades / absences into our database. 
+For all the classes / tables with a (*) it is expected that you have imported the relevant information into these classes before using this application (for example by using flask-admin).
 
-Lastly, as we have said before, if time would permit it, we would like to also embed a google map in the contact page. For this, the Google Maps API would be needed. 
+## Code Context
+First, to calculate the mean of any course, we should use:
 
+<img src="http://www.sciweavers.org/tex2img.php?eq=%24%5Cmu_%7B%5Ctext%7Bold%7D%7D%20%3D%20%5Cfrac%7B%5Csum_%7Bi%7D%20g_i%20w_i%7D%7B%5Csum_%7Bi%7D%20w_i%7D%24%0A&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="$\mu_{\text{old}} = \frac{\sum_{i} g_i w_i}{\sum_{i} w_i}$" width="103" height="35" />,
 
-## Updated database design 
-The updated design (UML diagram) of the database can be found below. In this diagram FK is shorthand for "Foreign Key" and PK is shorthand for "Primary Key".
-![UML-Diagram database design](doc/img/uml-diagram-2.png)
+where <img src="https://bit.ly/2z2kxPY" border="0" alt="g_i" width="21" height="17" /> represent the grades and <img src="https://bit.ly/1f7oYHw" border="0" alt="w_i" width="24" height="15" /> represents the weight of the grade. 
+
+But let us say you have 100 grades, which correspond to 100 means generated in different times.
+Now if you want to change the third grade, you need to recalculate the third mean, but also all the means after that untill the 100th again. One way could be that you have to recalculate every grade with formula above by using all the grades before it. The problem with this is that the amount of summations you have to do this way can blow up very quickly (quadratically).
+
+The way to circumvent this problem is to make a new formula that calculates the mean given the old mean and the total weights of the grades. To derive this formula, note that 
+
+<img src="https://bit.ly/3gZqDC6" align="center" border="0" alt="\mu_{\text{new}} = \frac{\sum_{i} g_i w_i - g_d w_d + g_a w_a}{\sum_{i} w_i - w_d + w_a}" width="251" height="50" />
+
+where <img src="https://bit.ly/3cGOKCd" border="0" alt="g_d, w_d" width="57" height="17" /> represent the the deleted grade and weight respectively, and <img src="https://bit.ly/2Xz2YR5" border="0" alt="g_a, w_a" width="57" height="17" /> the new added grade and weight respectively (since the idea is that updating a grade is equivalent to deleting and adding a new grade). If you only delete a grade, then we simply set <img src="https://bit.ly/2Y0YIJb" border="0" alt="g_a, w_a = 0" width="89" height="19" />.
+
 
 
 
