@@ -40,16 +40,16 @@ For the portal routes we have used the following routes
 
 | Route                                                	| Description                                                      	| Note                                   	|
 |------------------------------------------------------	|------------------------------------------------------------------	|----------------------------------------	|
-| `/portal`                                            	| Admin page                                                       	| List of users / change permissions     	|
+| `/portal`                                            	| Admin portal                                                      | List of users / change permissions     	|
 | `/portal/update`                                     	| Route for updating information from users from admin             	|                                        	|
-| `/portal/tutor`                                      	| Tutor Page                                                       	| List of students / change limited data 	|
+| `/portal/tutor`                                      	| Tutor portal                                                      | List of students / change limited data 	|
 | `/portal/tutor/update`                               	| Route for updating information from students from tutor password 	|                                        	|
-| `/portal/parent`                                     	| Parent Page                                                      	| List of children that parent can visit 	|
-| `/portal/student/<int:userID>`                       	| Student Page                                                     	| Add courses / parents. View graphs     	|
+| `/portal/parent`                                     	| Parent Portal                                                     | List of children that parent can visit 	|
+| `/portal/student/<int:userID>`                       	| Student Portal                                                    | Add courses / parents. View graphs     	|
 | `/portal/<int:userID>/addfamily`                     	| Route that adds relations between students and parents           	| Think of a Facebook friendship request 	|
 | `/portal/pending`                                    	| Route for accepting / denying / deleting relation (requests)     	|                                        	|
 | `/portal/student/<int:userID>/addcourse`             	| Route for adding a course                                        	|                                        	|
-| `/portal/student/<int:userID>/course/<int:courseID>` 	| Course Page                                                      	|                                        	|
+| `/portal/student/<int:userID>/course/<int:courseID>` 	| Course Portal                                                     |                                        	|
 | `/portal/student/<int:userID>/addgrade`              	| Route for adding grade                                           	| This route calculates a new mean       	|
 | `/portal/student/<int:userID>/updategrade`           	| Route for updating/deleting grade                                	| This route recalculates all the means  	|
 
@@ -63,19 +63,39 @@ As you can see you have four separate tables with a list of all users. If you cl
 
 <img src="doc/img/admin-page-search.png" alt="A screenshot of the admin search functionality" width="650">
 
-You can also change user information by clicking on "change" for a row of the user (most right column):
+You can also change user information by clicking on "change" for a row of the user (most right column) (`/portal/update`):
 
 <img src="doc/img/admin-page-change.png" alt="A screenshot of the functionality of changing user information" width="300">
 
 ### Tutor Portal
-If you are logged in, and you are an tutor user or you are an admin that visits the tutor page, you are met with the following page (`/portal`)
+If you are logged in, and you are an tutor user or you are an admin that visits the tutor page, you are met with the following page (`/portal/admin`)
 
 <img src="doc/img/tutor-page.png" alt="A screenshot of the tutor page" width="650">
 
-As you can see there are multiple lists of students, each belonging to a group. You can search for students using the top left search bar in a similar fashion as with the search functionality in the admin page. And also in a similar fashion, you can change the information, but this is limited: 
+As you can see there are multiple lists of students, each belonging to a group. You can search for students using the top left search bar in a similar fashion as with the search functionality in the admin page. And also in a similar fashion, you can change the information, but this is limited (`/portal/tutor/update`): 
 
-<img src="doc/img/tutor-page-change.png" alt="A screenshot of the functionality of changing student information on tutor page" width="650">
+<img src="doc/img/tutor-page-change.png" alt="A screenshot of the functionality of changing student information on tutor page" width="300">
 
+You do however have the power in the tutor portal to reallocate students to different groups. 
+
+### Parent Portal
+If you are logged in, and you are an parent user or you are an admin that visits the parent page, you are met with the following page (`/portal/admin`)
+
+<img src="doc/img/parent-page.png" alt="A screenshot of the parent page" width="650">
+
+As you can see there three type of children: 
+- Accepted children (yes)
+- Not Accepted children (no)
+- Children that are requesting relations
+
+As a parent you can only view student / children profiles that have accepted you (and you accepted them) by clicking on the appropriate row. 
+You can naturally add a new relation by clicking "Add Child" (`/portal/<int:userID>/addfamily`). When a relationship is requested, and you click on "change", you will see the following modal:
+
+<img src="doc/img/relationship-request.png" alt="A screenshot of the relationship request modal" width="300">
+
+From here you accept / deny the relationship request (`/portal/pending`). If you click on "change" in all the other cases, you are presented with the modal (`/portal/pending`):
+
+<img src="doc/img/relationship-request.png" alt="A screenshot of the relationship delete modal" width="300">
 
 
 
