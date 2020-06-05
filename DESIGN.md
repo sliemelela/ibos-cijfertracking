@@ -54,7 +54,7 @@ For the portal routes we have used the following routes
 | `/portal/student/<int:userID>/updategrade`           	| Route for updating/deleting grade                                	| This route recalculates all the means  	|
 
 
-#### Admin Users
+#### Admin Portal
 If you are logged in, and you are an admin user, you are met with the following page (`/portal`)
 
 <img src="doc/img/admin-page.png" alt="A screenshot of the admin page" width="650">
@@ -67,7 +67,7 @@ You can also change user information by clicking on "change" for a row of the us
 
 <img src="doc/img/admin-page-change.png" alt="A screenshot of the functionality of changing user information" width="300">
 
-### Tutor Portal
+####  Tutor Portal
 If you are logged in, and you are an tutor user or you are an admin that visits the tutor page, you are met with the following page (`/portal/admin`)
 
 <img src="doc/img/tutor-page.png" alt="A screenshot of the tutor page" width="650">
@@ -78,7 +78,7 @@ As you can see there are multiple lists of students, each belonging to a group. 
 
 You do however have the power in the tutor portal to reallocate students to different groups. 
 
-### Parent Portal
+#### Parent Portal
 If you are logged in, and you are an parent user or you are an admin that visits the parent page, you are met with the following page (`/portal/admin`)
 
 <img src="doc/img/parent-page.png" alt="A screenshot of the parent page" width="650">
@@ -91,55 +91,35 @@ As you can see there three type of children:
 As a parent you can only view student / children profiles that have accepted you (and you accepted them) by clicking on the appropriate row. 
 You can naturally add a new relation by clicking "Add Child" (`/portal/<int:userID>/addfamily`). When a relationship is requested, and you click on "change", you will see the following modal:
 
-<img src="doc/img/relationship-request.png" alt="A screenshot of the relationship request modal" width="300">
+<img src="doc/img/relationship-request.png" alt="A screenshot of the relationship request modal" width="400">
 
 From here you accept / deny the relationship request (`/portal/pending`). If you click on "change" in all the other cases, you are presented with the modal (`/portal/pending`):
 
-<img src="doc/img/relationship-request.png" alt="A screenshot of the relationship delete modal" width="300">
+<img src="doc/img/relationship-delete.png" alt="A screenshot of the relationship delete modal" width="400">
+
+#### Student Portal
+If you are logged in as a student, or as another account that is permitted to visit this student's profile, you are met with the following page:
+
+<img src="doc/img/student-page.png" alt="A screenshot of the student portal" width="650">
+
+From here you can "Add course" which will render a modal in which you can simply type the course name which will add the course to your list of course (`/portal/student/<int:userID>/addcourse`). If you click on a course in the table, you will immediately be redirected to the course page. You can also add a parent in the same way parents can add children (`/portal/<int:userID>/addfamily`) using "Add parent". For the explanation for how this works, visit the section of the Parent Portal. 
+
+##### Courses
+When you visit a course page, then you will be met with the following visual:
+
+<img src="doc/img/course-page.png" alt="A screenshot of a course page" width="650">
+
+From here you can add new grades by clicking "Add grade", which will render the following modal (`/portal/student/<int:userID>/addgrade`):
+
+<img src="doc/img/grade-modal.png" alt="A screenshot of adding a grade via a modal" width="300">
+
+Also you can update / delte existing grades using the "change" button in every row of a grade 
+
+<img src="doc/img/grade-modal-update.png" alt="A screenshot of updating/deletinh a grade via a modal" width="300">
 
 
 
 
-
-
-# Design of the Student Tracker application
-
-To understand to context in which this document was written, we first the reader to README.md.
-
-In this document we elucidate on which features of this application are going to be implemented to make it a minimum viable product and we will also expand on the user interface sketches as given in the document README.md. Also, the preliminary database design is going to be treated after which we conclude with a list of (external) data sources / APIs that we might want to include in this application. 
-
-## Main Features 
-The first main feature of this application is that students can add / delete / update grades. These grades will be summarized with the help of graphs (per course). 
-The second feature of this application is that the tutors can keep track of the student absences.
-
-The properties of the grades will be discussed in the database design.
-
-### Extra Features
-If time permits, we may want to add 
-- Blog Posts such that tutors and administrators can leave messages on the application for the students / parents (e.g. vacation days etc.).
-- Implementation of more grading systems.
-- Implementation of the difference between a regular test and school / central exam test.
-- Implementation of a multi-language website (English and Dutch).
-- Implementation of a calendar system, to see which students correspond with which times.
-
-These (extra) features were already listed in the README.md document. We have not included these features in the preliminary database design. 
-
-## User Interface
-
-When a user first visits the web application, the user will be met with a home page. Depending on who is logged in, the home page may have different URL's in the navigation bar as seen by the sketches down below:
-
-![Sketch of Homepage](doc/img/sketch-home-page-1.png)
-![Sketch of Homepage](doc/img/sketch-home-page-2.png)
-
-If time permits, we may add a contact page with a contact form and an embedded google map as you can see down below:
-![Sketch of Contact](doc/img/sketch-home-page-3.png)
-
-If you are logged in (or have just signed up), you have access to a portal. The administrators and tutors can see the list of students, while a student can view only their own page. Parents can also see a list of students, but that list is limited to their own children.
-
-![Sketch of Portal](doc/img/sketch-portal-1.png)
-![Sketch of Portal](doc/img/sketch-portal-2.png)
-
-All the other features are self-evident from the above sketches (like adding grades via modals etc.). 
 
 ## Database Design 
 The preliminary design (UML diagram) of the database can be found below. In this diagram FK is shorthand for "Foreign Key" and PK is shorthand for "Primary Key".
