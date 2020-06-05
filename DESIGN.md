@@ -120,6 +120,7 @@ Also you can update / delte existing grades using the "change" button in every r
 
 ## Database Design 
 The database design (UML diagram) of the database can be found below. In this diagram FK is shorthand for "Foreign Key" and PK is shorthand for "Primary Key".
+
 ![UML-Diagram database design](doc/img/uml-diagram.png)
 
 In models.py we subdivide all these tables into three different categories:
@@ -141,20 +142,7 @@ In models.py we subdivide all these tables into three different categories:
 For all the classes / tables with a (*) it is expected that you have imported the relevant information into these classes before using this application (for example by using flask-admin).
 
 ## Code Context
-First, to calculate the mean of any course, we should use:
-
-<img src="https://bit.ly/3ePNP3v" align="center" border="0" alt="\mu_{\text{old}} = \frac{\sum_{i} g_i w_i}{\sum_{i} w_i}" width="117" height="50" />
-
-where <img src="https://bit.ly/2z2kxPY" border="0" alt="g_i" width="21" height="17" /> represent the grades and <img src="https://bit.ly/1f7oYHw" border="0" alt="w_i" width="24" height="15" /> represents the weight of the grade. 
-
-But let us say you have 100 grades, which correspond to 100 means generated in different times.
-Now if you want to change the third grade, you need to recalculate the third mean, but also all the means after that untill the 100th again. One way could be that you have to recalculate every grade with formula above by using all the grades before it. The problem with this is that the amount of summations you have to do this way can blow up very quickly (quadratically).
-
-The way to circumvent this problem is to make a new formula that calculates the mean given the old mean and the total weights of the grades. To derive this formula, note that 
-
-<img src="https://bit.ly/3gZqDC6" align="center" border="0" alt="\mu_{\text{new}} = \frac{\sum_{i} g_i w_i - g_d w_d + g_a w_a}{\sum_{i} w_i - w_d + w_a}" width="251" height="50" />
-
-where <img src="https://bit.ly/3cGOKCd" border="0" alt="g_d, w_d" width="57" height="17" /> represent the the deleted grade and weight respectively, and <img src="https://bit.ly/2Xz2YR5" border="0" alt="g_a, w_a" width="57" height="17" /> the new added grade and weight respectively (since the idea is that updating a grade is equivalent to deleting and adding a new grade). If you only delete a grade, then we simply set <img src="https://bit.ly/2Y0YIJb" border="0" alt="g_a, w_a = 0" width="89" height="19" />.
+For the how the formulas are derived in the `/portal/student/<int:userID>/updategrade` route, we refer to: https://drive.google.com/file/d/18O9DOu2kRHg4Hyh-deQwz1lQIAQYQN1S/view?usp=sharing.
 
 
 
