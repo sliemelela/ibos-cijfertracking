@@ -203,10 +203,10 @@
         {% for user in users %}
         {% if user.tutor %}
           <tr data-href="{{ url_for('tutor') }}">
-            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.firstName }}</td>
-            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.lastName }}</td>
-            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.username }}</td>
-            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.email }}</td>
+            <td>{{ user.firstName }}</td>
+            <td>{{ user.lastName }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
             <td>
                <!-- Button trigger modal -->
             <button type="button" class="btn btn-outline-primary btn-sm update-button" data-toggle="modal" data-target="#otherModal{{ user.id }}Long">
@@ -237,10 +237,10 @@
         {% for user in users %}
         {% if user.admin %}
           <tr>
-            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.firstName }}</td>
-            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.lastName }}</td>
-            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.username }}</td>
-            <td data-href="{{ url_for('student', userID=user.id) }}">{{ user.email }}</td>
+            <td>{{ user.firstName }}</td>
+            <td>{{ user.lastName }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
             <td>
               <!-- Button trigger modal -->
             <button type="button" class="btn btn-outline-primary btn-sm update-button" data-toggle="modal" data-target="#otherModal{{ user.id }}Long">
