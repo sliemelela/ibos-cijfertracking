@@ -143,7 +143,7 @@ For all the classes / tables with a (*) it is expected that you have imported th
 ## Code Context
 First, to calculate the mean of any course, we should use:
 
-<img src="http://www.sciweavers.org/tex2img.php?eq=%24%5Cmu_%7B%5Ctext%7Bold%7D%7D%20%3D%20%5Cfrac%7B%5Csum_%7Bi%7D%20g_i%20w_i%7D%7B%5Csum_%7Bi%7D%20w_i%7D%24%0A&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="$\mu_{\text{old}} = \frac{\sum_{i} g_i w_i}{\sum_{i} w_i}$" width="103" height="35" />,
+<img src="https://bit.ly/3ePNP3v" align="center" border="0" alt="\mu_{\text{old}} = \frac{\sum_{i} g_i w_i}{\sum_{i} w_i}" width="117" height="50" />
 
 where <img src="https://bit.ly/2z2kxPY" border="0" alt="g_i" width="21" height="17" /> represent the grades and <img src="https://bit.ly/1f7oYHw" border="0" alt="w_i" width="24" height="15" /> represents the weight of the grade. 
 
