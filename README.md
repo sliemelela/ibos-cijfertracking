@@ -60,3 +60,6 @@ The second version is more structured and shows all the feautures with the updat
 Note: Showcase banner by Helloquence on Unsplash
 
 - Sliem el Ela, All Rights Reserved. 2020.
+
+## Task list
+TODO: Publish website
