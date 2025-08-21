@@ -1,0 +1,30 @@
+[project]
+name = "ibos-cijfertracking"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Alexandre Lopez",email = "alexxandre.lopez@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "flask",
+    "flask-session",
+    "werkzeug",        # note: no version pin!
+    "sqlalchemy",
+    "psycopg2-binary",
+    "requests",
+    "flask-migrate",
+    "flask-admin",
+    "flask-login",
+    "numpy (>=2.3.2,<3.0.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)",
+]
+
+[tool.poetry]
+package-mode = false
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
