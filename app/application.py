@@ -35,7 +35,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure migrations
-Migrate(app, db)
+Migrate(app, db, directory="app/migrations")
 
 # Secret key
 app.secret_key = os.environ['SECRET_KEY']
