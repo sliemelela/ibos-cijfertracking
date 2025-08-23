@@ -18,10 +18,6 @@ from flask_admin.contrib.sqla import ModelView
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from models import *
 from datetime import date, datetime
-from dotenv import load_dotenv
-
-# Load secret keys (for development only)
-load_dotenv()
 
 # Configure Flask app
 app = Flask(__name__)
