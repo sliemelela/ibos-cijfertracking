@@ -1,13 +1,18 @@
 # This script populates the database so that the web app is functional. 
+import os, hashlib, getpass
 
-import os, hashlib
+## Create admin account
+while True:
+    password0 = getpass.getpass("Set admin password: ")
+    password1 = getpass.getpass("Confirm password: ")
+    if password0 == password1:
+        print("Passwords match!\n")
+        break
+    else:
+        print("Passwords do not match! Please retry.\n")
 
-## Create admin
-# Username: admin
-# Password: admin
-password = "admin"
 salt = os.urandom(32)
-key = hashlib.pbkdf2_hmac('sha256', password.encode("utf-8"), salt, 100000)
+key = hashlib.pbkdf2_hmac('sha256', password0.encode("utf-8"), salt, 100000)
 user = User(
     username = "admin", 
     firstName = "Admin", 
@@ -60,3 +65,5 @@ testType = TestType(
 db.session.add(testType)
 db.session.commit()
 print("Successfully created tmp test type.")
+
+exit()
