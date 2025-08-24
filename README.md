@@ -63,3 +63,13 @@ Note: Showcase banner by Helloquence on Unsplash
 
 ## Task list
 TODO: Publish website
+
+## Local demo instructions
+1. Install packages.
+2. Create .env file in project root with the following:
+    SECRET_KEY=dev-secret-key
+    FLASK_APP=app/application.py
+    DATABASE_URL=sqlite:///dev.db
+2. Create the database with `flask db upgrade` and running `exec(open("app/populate_db.py").read())`.
+3. Exit flask shell with `exit()`.
+4. Run web app with `flask run`.
