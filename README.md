@@ -70,6 +70,11 @@ TODO: Publish website
     SECRET_KEY=dev-secret-key
     FLASK_APP=app/application.py
     DATABASE_URL=sqlite:///dev.db
-2. Create the database with `flask db upgrade` and running `exec(open("app/populate_db.py").read())`.
-3. Exit flask shell with `exit()`.
+2. Create the database with 
+    `flask db upgrade` 
+    and running 
+    `flask shell`
+    `exec(open("app/populate_db.py").read())`
+3. Set password of the first admin account.
 4. Run web app with `flask run`.
+5. To create tutor and admin accounts, create parent accounts and edit the rights of these accounts in the admin panel.
