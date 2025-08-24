@@ -25,52 +25,6 @@ db.session.add(user)
 db.session.commit()
 print("Successfully created admin user.")
 
-## Create admin (backup)
-# Username: admin_
-# Password: admin
-password = "admin"
-salt = os.urandom(32)
-key = hashlib.pbkdf2_hmac('sha256', password.encode("utf-8"), salt, 100000)
-user = User(
-    username = "admin_", 
-    firstName = "Admin", 
-    lastName = "Admin", 
-    email = "admin_@ibos.nu", 
-    key = key, 
-    salt = salt,
-    student = False, 
-    parent = False, 
-    tutor = False, 
-    admin = True
-    )
-
-db.session.add(user)
-db.session.commit()
-print("Successfully created backup admin user.")
-
-## Create tutor
-# Username: tutor
-# Password: tutor
-password = "tutor"
-salt = os.urandom(32)
-key = hashlib.pbkdf2_hmac('sha256', password.encode("utf-8"), salt, 100000)
-user = User(
-    username = "tutor", 
-    firstName = "Tutor", 
-    lastName = "Tutor", 
-    email = "tutor@ibos.nu", 
-    key = key, 
-    salt = salt,
-    student = False, 
-    parent = False, 
-    tutor = True, 
-    admin = False
-    )
-
-db.session.add(user)
-db.session.commit()
-print("Successfully created tutor user.")
-
 ## Create school
 school = School(
     name = "tmp"
