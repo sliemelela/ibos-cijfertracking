@@ -15,7 +15,7 @@ from flask_migrate import Migrate
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
-from models import *
+from app.models import *
 from datetime import date, datetime
 
 # Configure Flask app
