@@ -10,15 +10,15 @@ requires-python = ">=3.13"
 dependencies = [
     "flask",
     "flask-session",
-    "werkzeug",        # note: no version pin!
     "sqlalchemy",
-    "psycopg2-binary",
-    "requests",
     "flask-migrate",
     "flask-admin",
     "flask-login",
     "numpy (>=2.3.2,<3.0.0)",
     "python-dotenv (>=1.1.1,<2.0.0)",
+    "alembic (>=1.16.4,<2.0.0)",
+    "flask-sqlalchemy (>=3.1.1,<4.0.0)",
+    "psycopg2-binary (>=2.9.10,<3.0.0)",
 ]
 
 [tool.poetry]
