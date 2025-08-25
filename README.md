@@ -61,20 +61,26 @@ Note: Showcase banner by Helloquence on Unsplash
 
 - Sliem el Ela, All Rights Reserved. 2020.
 
-## Task list
-TODO: Publish website
+## Running the app
+As soon as the files are pulled, make sure to install the dependencies with either Poetry or requirements.txt.
 
-## Local demo instructions
-1. Install packages.
-2. Create .env file in project root with the following:
-    SECRET_KEY=dev-secret-key
+### Initialising the database tables
+1. Create .env file in project root with the following:
+    SECRET_KEY=some-64-character-hex-key
     FLASK_APP=app/application.py
-    DATABASE_URL=sqlite:///dev.db
-2. Create the database with 
+    DATABASE_URL=sqlite:///dev.db # Or the url to your online database
+2. Create the database by running the following in zsh:
     `flask db upgrade` 
-    and running 
+3. Populate the databases so that the web app is functional by running the following in zsh:
     `flask shell`
     `exec(open("app/populate_db.py").read())`
-3. Set password of the first admin account.
-4. Run web app with `flask run`.
-5. To create tutor and admin accounts, create parent accounts and edit the rights of these accounts in the admin panel.
+
+### Running app with Flask (for development purposes only)
+Run web app with `flask run`.
+
+### Running app with Gunicorn (for deployment)
+1. Load the .env file. For testing locally, this is done by running this in zsh:
+    `export $(grep -v '^#' .env | xargs)`
+    When deploying, load the values in the .env file as Environment Variables in the settings of the project. The line with FLASK_APP can be omitted here.
+2. Start web app by running `gunicorn app.application:app` in zsh.
+    For deployment, this is not necessary, as the hosting service automatically runs whatever is inside Procfile.
