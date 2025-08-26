@@ -1,9 +1,0 @@
-Flask
-Flask-Session
-psycopg2-binary
-SQLAlchemy
-requests
-flask-migrate
-werkzeug==0.16
-flask-admin
-flask-login
