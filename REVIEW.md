@@ -66,6 +66,3 @@ Note: Some of these changes have already been made to the code (thanks to Simon)
 5. There are two empty lines between the block of imports and the first actual code. Make that one.
     - Note: I was not sure if that is the actual convention. During the Programming 2 course of the Minor Programming at the UvA, the style guide explicitely stated to leave two empty lines. Maybe this is not the case anymore, but just to be sure I left it at two empty lines.
 6. Add two comments in your application.py file.
-
-
-Test
