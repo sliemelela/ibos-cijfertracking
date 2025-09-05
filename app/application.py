@@ -581,7 +581,7 @@ def addGrade(userID):
     weights = [float(gradeObject.weight) for gradeObject in gradeObjects]
 
     # Calculating the (weighted) mean of all grades 
-    mean = np.average(grades, weights=weights)
+    mean = np.average(grades, weights=weights).item()
 
     # Iniating mean object and adding it to database
     meanObject = CourseMean(gradeID=grade.id, courseID=courseID, mean=mean)
@@ -608,7 +608,7 @@ def addGrade(userID):
                 weights.append(float(typeGradeObject.weight))
                 
         if len(grades) > 0:
-            mean = np.average(grades, weights=weights)
+            mean = np.average(grades, weights=weights).item()
 
             # Retrieve old means
             typeMeanObject = TypeMean.query.filter_by(studentID=userID, typeID=testType.id).first()
