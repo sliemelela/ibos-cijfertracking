@@ -178,7 +178,7 @@
         <form action="{{ url_for('tutorUpdate') }}" method="post">
           <div class="modal-body">
             <div class="form-group">
-              <label for="addTestType">School</label>
+              <label for="addTestType">Group</label>
               <select class="form-control" id="group" name="group">
                 {% for group in groups | sort(attribute='name') %}
                   <option value="{{ group.id }}">{{ group.day }}: {{ group.name }}</option>
