@@ -11,7 +11,12 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+
+  <!-- Light mode favicon -->
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon-lighttheme.ico') }}" sizes="16x16 32x32 48x48" media="(prefers-color-scheme: light)">
+
+  <!-- Dark mode favicon -->
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon-darktheme.ico') }}" sizes="16x16 32x32 48x48" media="(prefers-color-scheme: dark)">
 
   <!-- Javascript -->
   <script src="{{ url_for('static', filename='js/signup.js') }}"></script>
