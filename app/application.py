@@ -540,7 +540,10 @@ def course(userID, courseID):
     # Retrieve information about student and course
     student = User.query.get(userID)
     course = Course.query.get(courseID)
-    means = CourseMean.query.filter_by(courseID=courseID).all()
+    grades = Grade.query.filter_by(courseID=courseID).all()
+
+    # Using lambda is a temporary solution; it's better to add a dateSort column to grades
+    grades.sort(key=lambda g: g.dateTest or g.date)
 
     # Check if course exists or if it is actually a course of the student 
     if course is None or course.studentID != userID:
@@ -549,7 +552,7 @@ def course(userID, courseID):
     # Retrieve all test types
     testTypes = TestType.query.all()
 
-    return render_template("course.html", student=student, course=course, testTypes=testTypes, means=means)
+    return render_template("course.html", student=student, course=course, testTypes=testTypes, grades=grades)
 
 @app.route("/portal/student/<int:userID>/addgrade", methods=["POST"])
 def addGrade(userID):
