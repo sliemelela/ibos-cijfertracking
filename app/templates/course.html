@@ -197,12 +197,19 @@
     <script>
         const ctx = document.getElementById('myChart');
         const data = {
-            // Labels should be Date objects
-            labels: [{% for mean in means %} new Date("{{ mean.grade.date }}"), {% endfor %}],
+            labels: [
+                {% for grade in grades %}
+                    new Date("{{ grade.dateTest if grade.dateTest else grade.date }}"),
+                {% endfor %}
+            ],
             datasets: [{
                 fill: false,
-                label: 'The mean',
-                data: [{% for mean in means %} {{ mean.mean }},  {% endfor %}],
+                label: 'Grades',
+                data: [
+                    {% for grade in grades %}
+                        {{ grade.grade }},
+                    {% endfor %}
+                ],
                 borderColor: '#fe8b36',
                 backgroundColor: '#fe8b36',
             }]
@@ -230,7 +237,7 @@
                         display: true,
                         scaleLabel: {
                             display: true,
-                            labelString: "Mean",
+                            labelString: "Grade",
                         }
                     }]
                 }
