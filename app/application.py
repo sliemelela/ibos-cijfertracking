@@ -265,6 +265,7 @@ def update():
     username = request.form.get("username")
     firstName = request.form.get("firstName")
     lastName = request.form.get("lastName")
+    email = request.form.get("email")
     schoolID = request.form.get("school")
     levelID = request.form.get("schoolLevel")
     yearID = request.form.get("schoolYear")
@@ -285,6 +286,7 @@ def update():
     user.username = username
     user.firstName = firstName
     user.lastName = lastName
+    user.email = email
     user.schoolID = schoolID
     user.levelID = levelID
     user.yearID = yearID
