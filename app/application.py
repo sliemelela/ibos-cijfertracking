@@ -60,15 +60,7 @@ def load_user(userID):
 # Password validation for signing up.
 def pass_validation(password):
     if len(password) < 8:
-        return [False, "Make sure your password has at least 8 characters."]
-    elif re.search("[0-9]", password) is None:
-        return [False, "Make sure your password has number in it."]
-    elif re.search("[A-Z]", password) is None:
-        return [False, "Make sure your password has a capital letter in it."]
-    elif re.search("[a-z]", password) is None:
-        return [False, "Make sure your password has a lowercase letter in it."]
-    elif re.search(r"\W", password) is None:
-        return [False, "Make sure your password has a special character in it."]
+        return [False, "Make sure your password has at least 10 characters."]
     else:
         return [True, "No Error"]
 
