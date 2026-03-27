@@ -17,6 +17,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from app.models import *
 from datetime import date, datetime
+from sqlalchemy import func
 
 # Configure Flask app
 app = Flask(__name__)
@@ -540,10 +541,10 @@ def course(userID, courseID):
     # Retrieve information about student and course
     student = User.query.get(userID)
     course = Course.query.get(courseID)
-    grades = Grade.query.filter_by(courseID=courseID).all()
-
-    # Using lambda is a temporary solution; it's better to add a dateSort column to grades
-    grades.sort(key=lambda g: g.dateTest or g.date)
+    grades = Grade.query\
+        .filter_by(courseID=courseID)\
+        .order_by(func.coalesce(Grade.dateTest, Grade.date).asc())\
+        .all()  
 
     # Check if course exists or if it is actually a course of the student 
     if course is None or course.studentID != userID:
